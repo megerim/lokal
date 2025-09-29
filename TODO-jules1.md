@@ -8,7 +8,7 @@ Bu belge, projenin mevcut durumunu analiz ederek belirlenen görevleri, hata dü
 
 Bu bölümdeki görevler, uygulamanin stabil, güvenli ve kullanilabilir bir şekilde ilk sürümünün yayinlanmasi için tamamlanmasi zorunlu olan maddeleri içerir.
 
-### 1.1. Güvenlik: Admin Rolü Atama Mekanizması Eksikliği
+### 1.1. Güvenlik: Admin Rolü Atama Mekanizması Eksikliği -------------------
 
 - **Sorun:** Mevcut sistemde `user_profiles` tablosunda bir `role` sütunu ('admin', 'member') bulunuyor. Ancak, bir kullanıcıyı 'admin' olarak atamak için standart ve güvenli bir mekanizma (API endpoint, admin paneli arayüzü vb.) bulunmuyor. Bu durum, şu anda veritabanına manuel müdahale gerektiriyor ki bu hem güvensiz hem de sürdürülebilir değil.
 - **Çözüm Önerisi:**
