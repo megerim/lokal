@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const { to, subject, html } = validationResult.data;
 
     const { data, error } = await resend.emails.send({
-      from: 'Lokal <onboarding@resend.dev>', // Replace with your verified sending domain
+      from: 'Lokal <mail@lokallifelab.com>', // Replace with your verified sending domain
       to,
       subject,
       html,
