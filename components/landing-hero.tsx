@@ -13,7 +13,7 @@ const exampleImages = [
     title: "A Black and White Photo of a Woman Brushing Her Teeth",
   },
   {
-    url: "/swipe2.jpeg",
+    url: "/hero9.jpeg",
     link: "#",
     title: "Neon Palm",
     author: "Tim Mossholder",
@@ -25,7 +25,7 @@ const exampleImages = [
     title: "A blurry photo of a crowd of people",
   },
   {
-    url: "/swipe4.jpeg",
+    url: "/hero8.jpeg",
     link: "#",
     author: "Wesley Tingey",
     title: "Rippling Crystal Blue Water",

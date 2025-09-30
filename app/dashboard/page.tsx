@@ -6,6 +6,7 @@ import { ensureUserProfile } from "@/lib/supabase/ensure-profile"
 import { useAuth } from "@/components/auth/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CoffeeVoucherDisplay } from "@/components/coffee-voucher-display"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { DashboardWidgets } from "@/components/dashboard/dashboard-widgets"
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [activeTab, setActiveTab] = useState("overview")
   const [stats, setStats] = useState<DashboardStats>({
     totalGroups: 0,
     totalActivitiesAttended: 0,
@@ -180,8 +182,26 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Dashboard Content */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        {/* Mobile Dropdown */}
+        <div className="md:hidden">
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Sekme seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="overview">Genel Bakış</SelectItem>
+              <SelectItem value="social-groups">Sosyal Gruplar</SelectItem>
+              <SelectItem value="activities">Aktiviteler</SelectItem>
+              <SelectItem value="letters">Mektuplarım</SelectItem>
+              <SelectItem value="management">Yönetim</SelectItem>
+              <SelectItem value="settings">Ayarlar</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Desktop Tabs */}
+        <TabsList className="hidden md:grid w-full grid-cols-3 lg:grid-cols-6 gap-2">
           <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
           <TabsTrigger value="social-groups">Sosyal Gruplar</TabsTrigger>
           <TabsTrigger value="activities">Aktiviteler</TabsTrigger>
