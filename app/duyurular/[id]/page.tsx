@@ -82,17 +82,23 @@ export default async function AnnouncementDetailPage({ params }: Params) {
           {/* Image / Media */}
           <div className="lg:col-span-2">
             {announcement.image_url ? (
-              <div className="relative w-full h-80 md:h-[28rem] rounded-xl overflow-hidden">
+              <div
+                className="relative w-full overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm"
+                style={{ aspectRatio: "4 / 3", maxHeight: "32rem" }}
+              >
                 <Image
                   src={announcement.image_url}
                   alt={announcement.title}
                   fill
-                  className="object-cover"
+                  className="object-contain object-center"
                   sizes="(max-width: 1024px) 100vw, 66vw"
                 />
               </div>
             ) : (
-              <div className="w-full h-80 md:h-[28rem] rounded-xl bg-gray-100 flex items-center justify-center text-gray-500">
+              <div
+                className="flex w-full items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-500"
+                style={{ aspectRatio: "4 / 3", maxHeight: "32rem" }}
+              >
                 Görsel bulunmuyor
               </div>
             )}

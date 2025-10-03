@@ -229,7 +229,7 @@ export function ActivityRequestForm() {
                       id="title"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="örn. Yazılım Atölyesi"
+                      placeholder="örn. Atölye, Toplantı"
                       required
                       className="border-gray-300"
                     />
