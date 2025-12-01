@@ -1,18 +1,20 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Product } from "@/lib/types"
-import { ProductGrid } from "@/components/products/product-grid"
+import { ProductCard } from "@/components/products/product-card"
+import { CategorySidebar } from "@/components/products/category-sidebar"
 import { PageHero } from "@/components/page-hero"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Store, Info } from "lucide-react"
+import { Store, Info, Package } from "lucide-react"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,6 +44,27 @@ export default function ProductsPage() {
     fetchProducts()
   }, [])
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    products.forEach(product => {
+      counts[product.category] = (counts[product.category] || 0) + 1
+    })
+    return counts
+  }, [products])
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === "all") return products
+    return products.filter(product => product.category === selectedCategory)
+  }, [products, selectedCategory])
+
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      if (a.is_available !== b.is_available) return a.is_available ? -1 : 1
+      if (a.display_order !== b.display_order) return a.display_order - b.display_order
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+  }, [filteredProducts])
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <PageHero
@@ -59,25 +82,54 @@ export default function ProductsPage() {
           </AlertDescription>
         </Alert>
 
-        {/* Products Section */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="space-y-3">
-                <Skeleton className="aspect-square rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-8 w-1/3" />
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Category Sidebar */}
+          {!loading && !error && products.length > 0 && (
+            <CategorySidebar
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              categoryCounts={categoryCounts}
+              totalCount={products.length}
+            />
+          )}
+
+          {/* Products Section */}
+          <div className="flex-1 min-w-0">
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="space-y-3">
+                    <Skeleton className="aspect-square rounded-lg" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-8 w-1/3" />
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : error ? (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : sortedProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sortedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Package className="w-16 h-16 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Ürün Bulunamadı</h3>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  {selectedCategory === "all" 
+                    ? "Henüz ürün eklenmemiş."
+                    : "Bu kategoride henüz ürün bulunmuyor."}
+                </p>
+              </div>
+            )}
           </div>
-        ) : error ? (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : (
-          <ProductGrid products={products} />
-        )}
+        </div>
 
         {/* Additional Info */}
         {!loading && !error && products.length > 0 && (
