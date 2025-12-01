@@ -16,18 +16,20 @@ import { LetterHistory } from "@/components/dashboard/personal-letters/letter-hi
 import { ActivityManager } from "@/components/dashboard/activity-manager"
 import { GroupManager } from "@/components/dashboard/group-manager"
 import { useToast } from "@/hooks/use-toast"
-import { 
-  Users, 
-  Calendar, 
-  FileText, 
-  Settings, 
+import {
+  Users,
+  Calendar,
+  FileText,
+  Settings,
   Activity,
   TrendingUp,
   Clock,
   Star,
-  Bell
+  Bell,
+  LayoutDashboard
 } from "lucide-react"
 import type { UserProfile, SocialGroup, Activity as ActivityType, PersonalLetter } from "@/lib/types"
+import { motion } from "framer-motion"
 
 interface DashboardStats {
   totalGroups: number
@@ -146,110 +148,121 @@ export default function DashboardPage() {
     )
   }
 
-  const StatCard = ({ title, value, icon: Icon, description }: {
-    title: string
-    value: number
-    icon: any
-    description: string
-  }) => (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
-  )
+  const tabItems = [
+    { value: "overview", label: "Genel Bakış", icon: LayoutDashboard },
+    { value: "social-groups", label: "Sosyal Gruplar", icon: Users },
+    { value: "activities", label: "Aktiviteler", icon: Calendar },
+    { value: "letters", label: "Mektuplarım", icon: FileText },
+    { value: "management", label: "Yönetim", icon: TrendingUp },
+    { value: "settings", label: "Ayarlar", icon: Settings },
+  ]
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Hero Section */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0015ff] to-[#2563eb] bg-clip-text text-transparent">
-              Kullanıcı Paneli
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950/50">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white shadow-xl">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold mb-2">
+              Hoş Geldiniz, {profile?.full_name || user.email?.split("@")[0] || "Kullanıcı"}! 👋
             </h1>
-            <p className="text-muted-foreground">
-              Hoş geldiniz, {profile?.full_name || user.email?.split("@")[0] || "Kullanıcı"}! 
+            <p className="text-blue-100 max-w-2xl text-lg">
               Topluluk aktivitelerinizi ve kişisel deneyimlerinizi buradan yönetebilirsiniz.
+              Bugün harika bir gün olsun!
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Main Dashboard Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        {/* Mobile Dropdown */}
-        <div className="md:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Sekme seçin" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="overview">Genel Bakış</SelectItem>
-              <SelectItem value="social-groups">Sosyal Gruplar</SelectItem>
-              <SelectItem value="activities">Aktiviteler</SelectItem>
-              <SelectItem value="letters">Mektuplarım</SelectItem>
-              <SelectItem value="management">Yönetim</SelectItem>
-              <SelectItem value="settings">Ayarlar</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="absolute right-0 top-0 h-full w-1/3 bg-white/10 blur-3xl transform rotate-12 translate-x-10" />
+          <div className="absolute bottom-0 right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
         </div>
 
-        {/* Desktop Tabs */}
-        <TabsList className="hidden md:grid w-full grid-cols-3 lg:grid-cols-6 gap-2">
-          <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
-          <TabsTrigger value="social-groups">Sosyal Gruplar</TabsTrigger>
-          <TabsTrigger value="activities">Aktiviteler</TabsTrigger>
-          <TabsTrigger value="letters">Mektuplarım</TabsTrigger>
-          <TabsTrigger value="management">Yönetim</TabsTrigger>
-          <TabsTrigger value="settings">Ayarlar</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <DashboardWidgets />
-        </TabsContent>
-
-        <TabsContent value="social-groups">
-          <SocialGroupsNav />
-        </TabsContent>
-
-        <TabsContent value="activities">
-          <ActivityTimeline />
-        </TabsContent>
-
-        <TabsContent value="letters">
-          <LetterHistory />
-        </TabsContent>
-
-        <TabsContent value="management">
-          <div className="space-y-8">
-            <ActivityManager />
-            <GroupManager />
+        {/* Main Dashboard Content */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          {/* Mobile Dropdown */}
+          <div className="md:hidden">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full h-12 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm rounded-xl">
+                <SelectValue placeholder="Sekme seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {tabItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    <div className="flex items-center gap-2">
+                      <item.icon className="w-4 h-4" />
+                      {item.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </TabsContent>
 
-        <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profil Ayarları</CardTitle>
-              <CardDescription>
-                Profil bilgilerinizi güncelleyin
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Ayarlar paneli yükleniyor...</p>
+          {/* Desktop Tabs - Pill Design */}
+          <div className="hidden md:block sticky top-4 z-30 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-md py-2 -mx-4 px-4">
+            <TabsList className="w-full justify-start h-auto p-1 bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-full shadow-sm">
+              {tabItems.map((item) => (
+                <TabsTrigger
+                  key={item.value}
+                  value={item.value}
+                  className="flex items-center gap-2 px-6 py-3 rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300"
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <TabsContent value="overview" className="mt-0 space-y-4">
+              <DashboardWidgets />
+            </TabsContent>
+
+            <TabsContent value="social-groups" className="mt-0">
+              <SocialGroupsNav />
+            </TabsContent>
+
+            <TabsContent value="activities" className="mt-0">
+              <ActivityTimeline />
+            </TabsContent>
+
+            <TabsContent value="letters" className="mt-0">
+              <LetterHistory />
+            </TabsContent>
+
+            <TabsContent value="management" className="mt-0">
+              <div className="space-y-8">
+                <ActivityManager />
+                <GroupManager />
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </TabsContent>
+
+            <TabsContent value="settings" className="mt-0">
+              <Card className="border-none shadow-lg bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>Profil Ayarları</CardTitle>
+                  <CardDescription>
+                    Profil bilgilerinizi güncelleyin
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12 text-muted-foreground">
+                    <div className="bg-gray-100 dark:bg-gray-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Settings className="w-10 h-10 opacity-50" />
+                    </div>
+                    <p className="text-lg font-medium">Ayarlar paneli hazırlanıyor...</p>
+                    <p className="text-sm">Yakında burada profilinizi düzenleyebileceksiniz.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </motion.div>
+        </Tabs>
+      </div>
     </div>
   )
 }

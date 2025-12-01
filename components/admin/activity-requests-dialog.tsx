@@ -14,14 +14,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { 
-  MessageSquare, 
-  Trash2, 
-  Calendar, 
-  Users, 
-  Clock, 
-  Building2, 
-  Phone, 
+import {
+  MessageSquare,
+  Trash2,
+  Calendar,
+  Users,
+  Clock,
+  Building2,
+  Phone,
   Mail,
   DollarSign,
   FileText,
@@ -71,7 +71,11 @@ const statusConfig = {
   rejected: { label: "Reddedildi", icon: XCircle, color: "bg-red-100 text-red-800" },
 }
 
-export function ActivityRequestsDialog() {
+interface ActivityRequestsDialogProps {
+  trigger?: React.ReactNode
+}
+
+export function ActivityRequestsDialog({ trigger }: ActivityRequestsDialogProps) {
   const [open, setOpen] = useState(false)
   const [requests, setRequests] = useState<ActivityRequest[]>([])
   const [loading, setLoading] = useState(false)
@@ -148,8 +152,8 @@ export function ActivityRequestsDialog() {
     }
   }
 
-  const filteredRequests = selectedStatus === "all" 
-    ? requests 
+  const filteredRequests = selectedStatus === "all"
+    ? requests
     : requests.filter(r => r.status === selectedStatus)
 
   useEffect(() => {
@@ -161,10 +165,12 @@ export function ActivityRequestsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <MessageSquare className="w-4 h-4 mr-2" />
-          Aktivite Talepleri
-        </Button>
+        {trigger || (
+          <Button variant="outline">
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Aktivite Talepleri
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
@@ -199,7 +205,7 @@ export function ActivityRequestsDialog() {
                 {filteredRequests.map((request) => {
                   const StatusIcon = statusConfig[request.status as keyof typeof statusConfig]?.icon || AlertCircle
                   const statusColor = statusConfig[request.status as keyof typeof statusConfig]?.color || "bg-gray-100 text-gray-800"
-                  
+
                   return (
                     <div key={request.id} className="p-5 border rounded-lg space-y-3 hover:shadow-md transition-shadow">
                       {/* Header */}
@@ -222,8 +228,8 @@ export function ActivityRequestsDialog() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Select 
-                            value={request.status} 
+                          <Select
+                            value={request.status}
                             onValueChange={(value) => handleStatusChange(request.id, value)}
                           >
                             <SelectTrigger className="w-[130px] h-8">
@@ -294,7 +300,7 @@ export function ActivityRequestsDialog() {
                           </div>
                           <div className="flex items-center gap-4">
                             {request.requester_email && (
-                              <a 
+                              <a
                                 href={`mailto:${request.requester_email}`}
                                 className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
                               >
@@ -303,7 +309,7 @@ export function ActivityRequestsDialog() {
                               </a>
                             )}
                             {request.phone_number && (
-                              <a 
+                              <a
                                 href={`tel:${request.phone_number.replace(/\s/g, '')}`}
                                 className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
                               >

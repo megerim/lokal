@@ -10,20 +10,22 @@ import { useToast } from "@/hooks/use-toast"
 import { errorHandler } from "@/lib/error-handler"
 import Link from "next/link"
 import Image from "next/image"
-import { 
-  Users, 
-  MessageCircle, 
-  Calendar, 
-  MapPin, 
+import {
+  Users,
+  MessageCircle,
+  Calendar,
+  MapPin,
   Clock,
   Bell,
   ExternalLink,
   UserMinus,
-  Settings
+  Settings,
+  ArrowRight
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { tr } from "date-fns/locale"
 import type { SocialGroup, GroupMember, ClubComment } from "@/lib/types"
+import { motion } from "framer-motion"
 
 interface EnhancedSocialGroup extends SocialGroup {
   group_members?: GroupMember[]
@@ -78,7 +80,7 @@ export function SocialGroupsNav() {
 
       // Get member counts and recent activity for each group
       const groupIds = memberships.map(m => m.group_id)
-      
+
       const { data: memberCounts, error: countsError } = await supabase
         .from("group_members")
         .select("group_id")
@@ -101,11 +103,11 @@ export function SocialGroupsNav() {
         const group = (membership.social_groups as any) as SocialGroup
         const groupMemberCount = memberCounts?.filter(m => m.group_id === membership.group_id).length || 0
         const groupComments = recentComments?.filter(c => c.group_id === membership.group_id) || []
-        
+
         // Calculate unread count (simplified - comments from last 7 days)
         const recentThreshold = new Date()
         recentThreshold.setDate(recentThreshold.getDate() - 7)
-        const unreadCount = groupComments.filter(c => 
+        const unreadCount = groupComments.filter(c =>
           new Date(c.created_at) > recentThreshold && c.user_name !== user.email?.split("@")[0]
         ).length
 
@@ -212,7 +214,7 @@ export function SocialGroupsNav() {
       <div className="space-y-4">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map(i => (
-            <Card key={i}>
+            <Card key={i} className="border-none shadow-sm rounded-2xl">
               <CardHeader>
                 <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                 <div className="h-3 bg-gray-200 rounded w-1/4"></div>
@@ -230,15 +232,17 @@ export function SocialGroupsNav() {
 
   if (groups.length === 0) {
     return (
-      <Card>
-        <CardContent className="pt-8 pb-8">
+      <Card className="border-none shadow-lg rounded-2xl bg-white dark:bg-gray-900">
+        <CardContent className="pt-12 pb-12">
           <div className="text-center">
-            <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium mb-2">Henüz grubunuz yok</h3>
-            <p className="text-muted-foreground mb-4">
-              İlgi alanlarınıza uygun gruplara katılarak toplulukla buluşun
+            <div className="bg-gray-100 dark:bg-gray-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Users className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Henüz grubunuz yok</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              İlgi alanlarınıza uygun gruplara katılarak toplulukla buluşun, yeni arkadaşlar edinin ve etkinliklere katılın.
             </p>
-            <Button asChild>
+            <Button asChild size="lg" className="rounded-full px-8">
               <Link href="/sosyal-gruplar">
                 Grupları Keşfet
               </Link>
@@ -249,19 +253,41 @@ export function SocialGroupsNav() {
     )
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  }
+
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="w-6 h-6 text-muted-foreground" />
+          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+          </div>
           <div>
-            <h2 className="text-xl font-semibold">Sosyal Gruplarım</h2>
+            <h2 className="text-xl font-bold">Sosyal Gruplarım</h2>
             <p className="text-sm text-muted-foreground">
               Üye olduğunuz {groups.length} grup
             </p>
           </div>
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" className="rounded-full" asChild>
           <Link href="/sosyal-gruplar">
             <ExternalLink className="w-4 h-4 mr-2" />
             Tüm Gruplar
@@ -271,143 +297,144 @@ export function SocialGroupsNav() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {groups.map(group => (
-          <Card key={group.id} className="hover:shadow-md transition-shadow">
-            {group.image_url && (
-              <div className="relative h-32 w-full">
-                <Image
-                  src={group.image_url || "/placeholder.svg"}
-                  alt={group.name}
-                  fill
-                  className="object-cover rounded-t-lg"
-                />
-                <div className="absolute top-2 right-2 flex gap-2">
-                  {group.category && (
-                    <Badge 
-                      className={`${CATEGORY_COLORS[group.category] || CATEGORY_COLORS.other}`}
-                    >
-                      {CATEGORY_LABELS[group.category] || group.category}
-                    </Badge>
-                  )}
-                  {group.user_role === 'admin' && (
-                    <Badge variant="secondary">
-                      <Settings className="w-3 h-3 mr-1" />
-                      Yönetici
-                    </Badge>
-                  )}
-                </div>
-                {group.unread_count > 0 && (
-                  <div className="absolute top-2 left-2">
-                    <Badge variant="destructive" className="px-2 py-1">
-                      <Bell className="w-3 h-3 mr-1" />
-                      {group.unread_count}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            <CardHeader className={group.image_url ? "pb-3" : ""}>
-              <div className="flex items-start justify-between">
-                <div className="space-y-1 flex-1">
-                  <CardTitle className="text-lg line-clamp-1">{group.name}</CardTitle>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
-                      {group.member_count} üye
-                    </div>
-                    {group.recurring_day && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {DAY_LABELS[group.recurring_day]}
-                        {group.time && ` ${group.time}`}
-                      </div>
-                    )}
-                    {group.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {group.location}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {!group.image_url && (
-                  <div className="flex flex-col items-end gap-2">
+          <motion.div key={group.id} variants={item}>
+            <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 overflow-hidden group">
+              {group.image_url && (
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
+                    src={group.image_url || "/placeholder.svg"}
+                    alt={group.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-3 right-3 flex gap-2">
                     {group.category && (
-                      <Badge 
-                        className={`${CATEGORY_COLORS[group.category] || CATEGORY_COLORS.other}`}
+                      <Badge
+                        className={`${CATEGORY_COLORS[group.category] || CATEGORY_COLORS.other} border-none shadow-sm`}
                       >
                         {CATEGORY_LABELS[group.category] || group.category}
                       </Badge>
                     )}
                     {group.user_role === 'admin' && (
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" className="bg-white/90 text-black backdrop-blur-sm">
                         <Settings className="w-3 h-3 mr-1" />
                         Yönetici
                       </Badge>
                     )}
                   </div>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              <p className="text-gray-600 mb-4 line-clamp-2">{group.description}</p>
-              
-              {group.recent_comments && group.recent_comments.length > 0 && (
-                <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
-                    <MessageCircle className="w-3 h-3" />
-                    Son Aktivite
-                  </h4>
-                  <div className="space-y-1">
-                    {group.recent_comments.slice(0, 2).map((comment, index) => (
-                      <div key={index} className="text-xs text-muted-foreground">
-                        <span className="font-medium">{comment.user_name}</span>: 
-                        <span className="ml-1">
-                          {comment.content.length > 50 
-                            ? `${comment.content.substring(0, 50)}...` 
-                            : comment.content
-                          }
-                        </span>
+                  {group.unread_count > 0 && (
+                    <div className="absolute top-3 left-3">
+                      <Badge variant="destructive" className="px-2 py-1 shadow-lg animate-pulse">
+                        <Bell className="w-3 h-3 mr-1" />
+                        {group.unread_count}
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 left-3 text-white">
+                    <h3 className="text-xl font-bold line-clamp-1 text-shadow-sm">{group.name}</h3>
+                    <div className="flex items-center gap-3 text-sm text-white/90 mt-1">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" />
+                        {group.member_count} üye
                       </div>
-                    ))}
-                    <div className="text-xs text-muted-foreground">
-                      <Clock className="w-3 h-3 inline mr-1" />
-                      {formatDistanceToNow(new Date(group.last_activity || group.updated_at), {
-                        addSuffix: true,
-                        locale: tr,
-                      })}
+                      {group.location && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span className="truncate max-w-[150px]">{group.location}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <Button asChild size="sm" className="flex-1">
-                  <Link href={`/sosyal-gruplar/${group.id}`}>
-                    <MessageCircle className="w-4 h-4 mr-1" />
-                    Grup Sayfası
-                    {group.unread_count > 0 && (
-                      <Badge variant="destructive" className="ml-2 px-1 py-0 text-xs">
-                        {group.unread_count}
-                      </Badge>
-                    )}
-                  </Link>
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleLeaveGroup(group)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <UserMinus className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              <CardContent className={group.image_url ? "pt-4" : "pt-6"}>
+                {!group.image_url && (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-bold line-clamp-1">{group.name}</h3>
+                      <div className="flex gap-2">
+                        {group.category && (
+                          <Badge
+                            className={`${CATEGORY_COLORS[group.category] || CATEGORY_COLORS.other}`}
+                          >
+                            {CATEGORY_LABELS[group.category] || group.category}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" />
+                        {group.member_count} üye
+                      </div>
+                      {group.location && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" />
+                          {group.location}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm">
+                  {group.description}
+                </p>
+
+                {group.recent_comments && group.recent_comments.length > 0 && (
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                    <h4 className="text-xs font-semibold mb-2 flex items-center gap-1 text-muted-foreground uppercase tracking-wider">
+                      <MessageCircle className="w-3 h-3" />
+                      Son Aktivite
+                    </h4>
+                    <div className="space-y-2">
+                      {group.recent_comments.slice(0, 2).map((comment, index) => (
+                        <div key={index} className="text-sm">
+                          <span className="font-medium text-gray-900 dark:text-gray-100">{comment.user_name}</span>:
+                          <span className="ml-1 text-gray-600 dark:text-gray-400">
+                            {comment.content.length > 50
+                              ? `${comment.content.substring(0, 50)}...`
+                              : comment.content
+                            }
+                          </span>
+                        </div>
+                      ))}
+                      <div className="text-xs text-muted-foreground pt-1 border-t border-gray-100 dark:border-gray-800 mt-2">
+                        <Clock className="w-3 h-3 inline mr-1" />
+                        {formatDistanceToNow(new Date(group.last_activity || group.updated_at), {
+                          addSuffix: true,
+                          locale: tr,
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 mt-auto">
+                  <Button asChild className="flex-1 rounded-full group/btn">
+                    <Link href={`/sosyal-gruplar/${group.id}`}>
+                      Grup Sayfası
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleLeaveGroup(group)}
+                    className="rounded-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-900/30"
+                    title="Gruptan Ayrıl"
+                  >
+                    <UserMinus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
