@@ -27,29 +27,20 @@ export function Header() {
 
   const SocialIcons = () => (
     <div className="flex items-center gap-1 md:gap-2 mr-1 md:mr-3">
-      <Link 
-        href="https://instagram.com/lokal.tekirdag" 
-        target="_blank" 
+      <Link
+        href="https://instagram.com/lokal.tekirdag"
+        target="_blank"
         rel="noopener noreferrer"
         className="p-1 md:p-2 rounded-full hover:bg-muted transition-colors duration-200"
         aria-label="Instagram'da takip edin"
       >
         <Instagram className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
       </Link>
-      <Link 
-        href="https://wa.me/905334370266" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="p-1 md:p-2 rounded-full hover:bg-muted transition-colors duration-200"
-        aria-label="WhatsApp ile iletişime geçin"
-      >
-        <MessageCircle className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-      </Link>
     </div>
   )
 
   return (
-    <header 
+    <header
       className="sticky top-0 z-50 w-full border-b-2 bg-background/95 items-center justify-center backdrop-blur supports-[backdrop-filter]:bg-background/60 border-[#0015ff]"
       role="banner"
     >
@@ -63,14 +54,14 @@ export function Header() {
               </span>
             </Link>
           </div>
-          
+
           {/* Navigation - Center */}
           <div className="flex items-center">
             <nav className="flex items-center space-x-8 text-sm font-medium" role="navigation" aria-label="Ana navigasyon">
               {navItems.map((item) => (
-                <NavItem 
-                  key={item.href} 
-                  item={item} 
+                <NavItem
+                  key={item.href}
+                  item={item}
                   pathname={pathname}
                   isActive={activeItem === item.name || pathname === item.href}
                   onMouseEnter={() => setActiveItem(item.name)}
@@ -79,7 +70,7 @@ export function Header() {
               ))}
             </nav>
           </div>
-          
+
           {/* User Menu - Right */}
           <div className="flex items-center justify-end flex-1">
             <SocialIcons />
@@ -126,9 +117,9 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 asChild
                 className="rounded-full bg-gradient-to-r from-[#0015ff] to-[#2563eb] hover:from-[#0015ff]/90 hover:to-[#2563eb]/90 transition-all duration-300"
               >
@@ -137,13 +128,13 @@ export function Header() {
             )}
           </div>
         </div>
-        
+
         {/* Mobile Layout */}
         <div className="flex md:hidden items-center w-full relative px-2">
           <div className="flex items-center">
             <MobileNav />
           </div>
-          
+
           {/* Centered Logo */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <Link href="/" className="flex items-center space-x-2 group">
@@ -152,7 +143,7 @@ export function Header() {
               </span>
             </Link>
           </div>
-          
+
           <div className="flex items-center ml-auto">
             <SocialIcons />
             {loading ? (
@@ -195,9 +186,9 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 asChild
                 className="rounded-full bg-gradient-to-r from-[#0015ff] to-[#2563eb] hover:from-[#0015ff]/90 hover:to-[#2563eb]/90 transition-all duration-300"
               >

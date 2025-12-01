@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { LandingHero } from "@/components/landing-hero"
 import Lokal from "@/components/lokal"
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp"
 import dynamic from "next/dynamic"
 
 const FeatureSection = dynamic(() => import("@/components/feature-section").then((mod) => mod.FeatureSection))
@@ -84,7 +85,7 @@ export default function HomePage() {
         ]}
       />
       <FeatureSection />
-
+      <FloatingWhatsApp />
     </div>
   )
 }
