@@ -60,7 +60,7 @@ export const menuData: MenuItem[] = [
     description: "Espresso ve kadifemsi süt köpüğü",
     price: 120,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "6",
@@ -76,7 +76,7 @@ export const menuData: MenuItem[] = [
     description: "Vanilya, karamel veya fındık aroması ile zenginleştirilmiş latte",
     price: 160,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "8",
@@ -84,7 +84,7 @@ export const menuData: MenuItem[] = [
     description: "Japon yeşil çay tozu ve süt ile hazırlanan özel içecek",
     price: 155,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "9",
@@ -92,7 +92,7 @@ export const menuData: MenuItem[] = [
     description: "Balkabağı baharatları ile tatlandırılmış sonbahar klasiği",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "10",
@@ -100,7 +100,7 @@ export const menuData: MenuItem[] = [
     description: "Espresso, buharlanmış süt ve yoğun süt köpüğü",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "11",
@@ -108,7 +108,7 @@ export const menuData: MenuItem[] = [
     description: "Espresso, çikolata ve süt karışımı",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "12",
@@ -116,7 +116,7 @@ export const menuData: MenuItem[] = [
     description: "Beyaz çikolata ile hazırlanan özel mocha",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "13",
@@ -124,7 +124,7 @@ export const menuData: MenuItem[] = [
     description: "Güçlü espresso ve mikro köpüklü süt",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "14",
@@ -132,7 +132,7 @@ export const menuData: MenuItem[] = [
     description: "Espresso üzerine bir tutam süt köpüğü",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "15",
@@ -154,7 +154,7 @@ export const menuData: MenuItem[] = [
     description: "Sıcak süt ve salep tozu ile hazırlanan geleneksel içecek",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "18",
@@ -162,7 +162,7 @@ export const menuData: MenuItem[] = [
     description: "Gerçek çikolata ile hazırlanan yoğun sıcak içecek",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "19",
@@ -170,7 +170,7 @@ export const menuData: MenuItem[] = [
     description: "Bal, süt ve kakao ile hazırlanan çocuklar için özel içecek",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "20",
@@ -178,7 +178,7 @@ export const menuData: MenuItem[] = [
     description: "Kafeinsiz kahve ve süt ile hazırlanan hafif içecek",
     price: 150,
     category: "coffees",
-    isVegetarian: true,
+
   },
   {
     id: "21",
@@ -186,7 +186,7 @@ export const menuData: MenuItem[] = [
     description: "Sıcak süt ve doğal bal karışımı",
     price: 100,
     category: "coffees",
-    isVegetarian: true,
+
   },
 
   // DÜŞÜN - TAT - SORGULA
@@ -210,7 +210,7 @@ export const menuData: MenuItem[] = [
     description: "Doğal bitki çayları ile hazırlanmış soğuk bir şölen. Sağlıklı bir deneyim çünkü renk değiştiriyor. 'Ruh, güzelliğe özlem duyar' diyenlerin içeceği",
     price: 200,
     category: "special",
-    isVegan: true,
+
   },
 
   // YAZ AYLARINDA
@@ -234,7 +234,7 @@ export const menuData: MenuItem[] = [
     description: "Buzlu espresso ve soğuk süt karışımı",
     price: 150,
     category: "summer",
-    isVegetarian: true,
+
   },
   {
     id: "28",
@@ -242,7 +242,7 @@ export const menuData: MenuItem[] = [
     description: "Vanilyalı dondurma üzerine sıcak espresso",
     price: 150,
     category: "summer",
-    isVegetarian: true,
+
   },
   {
     id: "29",
@@ -259,7 +259,7 @@ export const menuData: MenuItem[] = [
     description: "Klasik demlik çay",
     price: 50,
     category: "teas",
-    isVegan: true,
+
   },
   {
     id: "31",
@@ -267,7 +267,7 @@ export const menuData: MenuItem[] = [
     description: "Antioksidan açısından zengin yeşil çay",
     price: 100,
     category: "teas",
-    isVegan: true,
+
   },
   {
     id: "32",
@@ -275,7 +275,7 @@ export const menuData: MenuItem[] = [
     description: "Çeşitli şifalı bitkilerden hazırlanan çay",
     price: 100,
     category: "teas",
-    isVegan: true,
+
   },
   {
     id: "33",
@@ -283,7 +283,7 @@ export const menuData: MenuItem[] = [
     description: "Rahatlatıcı ıhlamur çayı",
     price: 100,
     category: "teas",
-    isVegan: true,
+
   },
   {
     id: "34",
@@ -291,7 +291,7 @@ export const menuData: MenuItem[] = [
     description: "Orman meyveleri ve hibiskus karışımı soğuk çay",
     price: 150,
     category: "teas",
-    isVegan: true,
+
   },
 
   // SOĞUK İÇECEKLER
@@ -301,7 +301,7 @@ export const menuData: MenuItem[] = [
     description: "Ev yapımı taze limonata",
     price: 150,
     category: "cold",
-    isVegan: true,
+
   },
   {
     id: "36",
@@ -309,7 +309,7 @@ export const menuData: MenuItem[] = [
     description: "Taze sıkılmış portakal suyu",
     price: 150,
     category: "cold",
-    isVegan: true,
+
   },
   {
     id: "37",
@@ -324,7 +324,7 @@ export const menuData: MenuItem[] = [
     description: "Doğal mineralli su",
     price: 80,
     category: "cold",
-    isVegan: true,
+
   },
   {
     id: "39",
@@ -332,7 +332,7 @@ export const menuData: MenuItem[] = [
     description: "Çeşitli meyve suları",
     price: 100,
     category: "cold",
-    isVegan: true,
+
   },
   {
     id: "40",
@@ -340,7 +340,7 @@ export const menuData: MenuItem[] = [
     description: "Ev yapımı taze ayran",
     price: 50,
     category: "cold",
-    isVegetarian: true,
+
   },
   {
     id: "41",
@@ -348,7 +348,7 @@ export const menuData: MenuItem[] = [
     description: "Şişe su",
     price: 30,
     category: "cold",
-    isVegan: true,
+
   },
 
   // LOKAL LEZZETLER

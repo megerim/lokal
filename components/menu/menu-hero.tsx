@@ -9,17 +9,6 @@ export function MenuHero() {
   const scale = useTransform(scrollY, [0, 300], [1, 0.95])
   const y = useTransform(scrollY, [0, 300], [0, -50])
 
-  const floatingItems = [
-    { emoji: "🍕", delay: 0, x: "10%", y: "20%" },
-    { emoji: "🍔", delay: 0.2, x: "80%", y: "15%" },
-    { emoji: "🥗", delay: 0.4, x: "15%", y: "70%" },
-    { emoji: "🍝", delay: 0.6, x: "75%", y: "65%" },
-    { emoji: "🍰", delay: 0.8, x: "45%", y: "10%" },
-    { emoji: "☕", delay: 1, x: "90%", y: "40%" },
-    { emoji: "🍹", delay: 1.2, x: "5%", y: "45%" },
-    { emoji: "🥘", delay: 1.4, x: "60%", y: "80%" },
-  ]
-
   return (
     <motion.section
       style={{ opacity, scale, y }}
@@ -27,28 +16,6 @@ export function MenuHero() {
     >
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-        
-        {floatingItems.map((item, index) => (
-          <motion.div
-            key={index}
-            className="absolute text-3xl sm:text-4xl md:text-5xl select-none"
-            style={{ left: item.x, top: item.y }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{
-              opacity: [0.4, 0.5, 0.4],
-              scale: [0.95, 1.05, 0.95],
-              y: [0, -5, 0],
-            }}
-            transition={{
-              duration: 8,
-              delay: item.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            {item.emoji}
-          </motion.div>
-        ))}
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
