@@ -193,7 +193,7 @@ export default function ChristmasMarketPage() {
                             >
                                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
                                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
-                                    <span>28-29 Aralık</span>
+                                    <span>27-28 Aralık</span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
                                     <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
@@ -255,7 +255,7 @@ export default function ChristmasMarketPage() {
                             {
                                 icon: <Calendar className="w-6 h-6 sm:w-8 sm:h-8" />,
                                 title: "Tarih",
-                                desc: "28-29 Aralık 2025",
+                                desc: "27-28 Aralık 2025",
                                 subdesc: "Cumartesi - Pazar",
                                 color: "from-red-500 to-red-600",
                                 bgColor: "bg-red-500/10",

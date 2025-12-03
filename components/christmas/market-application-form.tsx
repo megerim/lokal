@@ -42,14 +42,14 @@ const formSchema = z
   .object({
     brandName: z.string().min(2, "Marka adı en az 2 karakter olmalıdır"),
     instagram: z.string().min(1, "Instagram linki zorunludur"),
+    day27: z.boolean(),
     day28: z.boolean(),
-    day29: z.boolean(),
     logoUrl: z.string().min(1, "Logo yüklemeniz zorunludur"),
     description: z
       .string()
       .min(20, "Lütfen ürünlerinizi en az 20 karakterle anlatınız"),
   })
-  .refine((data) => data.day28 || data.day29, {
+  .refine((data) => data.day27 || data.day28, {
     message: "En az bir gün seçmelisiniz",
     path: ["day28"],
   });
@@ -89,8 +89,8 @@ export function MarketApplicationForm({
     defaultValues: {
       brandName: "",
       instagram: "",
+      day27: false,
       day28: false,
-      day29: false,
       logoUrl: "",
       description: "",
     },
@@ -109,8 +109,8 @@ export function MarketApplicationForm({
     setLoading(true);
     try {
       const participationDays = [];
+      if (values.day27) participationDays.push("27 Aralık");
       if (values.day28) participationDays.push("28 Aralık");
-      if (values.day29) participationDays.push("29 Aralık");
 
       const { error } = await supabase.from("market_applications").insert({
         user_id: user.id,
@@ -226,18 +226,18 @@ export function MarketApplicationForm({
                 Katılım Günleri
               </FormLabel>
               <div className="flex gap-4">
+
                 <FormField
                   control={form.control}
-                  name="day28"
+                  name="day27"
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
                         <label
-                          className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                            field.value
-                              ? "border-red-500 bg-red-50 dark:bg-red-950/30"
-                              : "border-border hover:border-red-300"
-                          }`}
+                          className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${field.value
+                            ? "border-green-500 bg-green-50 dark:bg-green-950/30"
+                            : "border-border hover:border-green-300"
+                            }`}
                         >
                           <Checkbox
                             checked={field.value}
@@ -245,41 +245,9 @@ export function MarketApplicationForm({
                             className="hidden"
                           />
                           <div className="text-center">
-                            <div className="font-semibold">28 Aralık</div>
+                            <div className="font-semibold">27 Aralık</div>
                             <div className="text-xs text-muted-foreground">
                               Cumartesi
-                            </div>
-                          </div>
-                          {field.value && (
-                            <Check className="w-5 h-5 text-red-500" />
-                          )}
-                        </label>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="day29"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <label
-                          className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                            field.value
-                              ? "border-green-500 bg-green-50 dark:bg-green-950/30"
-                              : "border-border hover:border-green-300"
-                          }`}
-                        >
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="hidden"
-                          />
-                          <div className="text-center">
-                            <div className="font-semibold">29 Aralık</div>
-                            <div className="text-xs text-muted-foreground">
-                              Pazar
                             </div>
                           </div>
                           {field.value && (
@@ -290,6 +258,39 @@ export function MarketApplicationForm({
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="day28"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <label
+                          className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${field.value
+                            ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                            : "border-border hover:border-red-300"
+                            }`}
+                        >
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="hidden"
+                          />
+                          <div className="text-center">
+                            <div className="font-semibold">28 Aralık</div>
+                            <div className="text-xs text-muted-foreground">
+                              Pazar
+                            </div>
+                          </div>
+                          {field.value && (
+                            <Check className="w-5 h-5 text-red-500" />
+                          )}
+                        </label>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
               </div>
               {form.formState.errors.day28 && (
                 <p className="text-sm text-red-500">
