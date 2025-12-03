@@ -31,6 +31,7 @@ import { format, formatDistanceToNow, isToday, isTomorrow } from "date-fns"
 import { tr } from "date-fns/locale"
 import type { Activity as ActivityType, SocialGroup, PersonalLetter, UserProfile } from "@/lib/types"
 import { CoffeeVoucherDisplay } from "@/components/coffee-voucher-display"
+import { MarketApplicationStatus } from "@/components/dashboard/market-application-status"
 import { motion } from "framer-motion"
 
 interface DashboardData {
@@ -465,6 +466,11 @@ export function DashboardWidgets() {
             {/* Decorative background element */}
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-50 dark:bg-orange-900/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
           </Card>
+        </motion.div>
+
+        {/* Yılbaşı Pazarı Başvuru Durumu */}
+        <motion.div variants={item}>
+          <MarketApplicationStatus />
         </motion.div>
       </div>
     </motion.div>
