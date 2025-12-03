@@ -371,6 +371,36 @@ export interface NotificationTemplate {
   updated_at: string
 }
 
+// Activity participation request (payment flow)
+export interface ActivityParticipationRequest {
+  id: string
+  activity_id: string
+  user_id: string
+  user_name?: string
+  user_email?: string
+  status: 'pending_payment' | 'payment_submitted' | 'approved' | 'rejected' | 'cancelled'
+  payment_method?: string
+  admin_notes?: string
+  created_at: string
+  updated_at: string
+}
+
+// Christmas market application
+export interface MarketApplication {
+  id: string
+  user_id: string
+  brand_name: string
+  product_description: string
+  instagram_handle?: string
+  logo_url?: string
+  participation_days?: string[]
+  status: 'pending' | 'approved_waiting_payment' | 'payment_submitted' | 'completed' | 'rejected'
+  payment_confirmed_at?: string
+  admin_notes?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Database {
   public: {
     Tables: {

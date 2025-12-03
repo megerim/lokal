@@ -14,9 +14,10 @@ import { ActivityRequestsDialog } from "@/components/admin/activity-requests-dia
 import { SocialGroupsManager } from "@/components/admin/social-groups-manager"
 import { ProductsManager } from "@/components/admin/products-manager"
 import { MarketApplications } from "@/components/admin/market-applications"
+import { ParticipationRequestsManager } from "@/components/admin/participation-requests-manager"
 import { useToast } from "@/hooks/use-toast"
 import { errorHandler } from "@/lib/error-handler"
-import { Calendar, Users, Edit, Trash2, Megaphone, UsersRound, Package, Send, QrCode, ArrowRight, MessageSquare, Store } from "lucide-react"
+import { Calendar, Users, Edit, Trash2, Megaphone, UsersRound, Package, Send, QrCode, ArrowRight, MessageSquare, Store, CreditCard } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -111,6 +112,7 @@ export function AdminDashboard() {
 
   const tabItems = [
     { value: "announcements", label: "Duyurular", icon: Megaphone },
+    { value: "participation-requests", label: "Katılım Talepleri", icon: CreditCard },
     { value: "social-groups", label: "Sosyal Gruplar", icon: UsersRound },
     { value: "products", label: "Ürünler", icon: Package },
     { value: "market-applications", label: "Yılbaşı Pazarı", icon: Store },
@@ -253,6 +255,10 @@ export function AdminDashboard() {
                 <AddAnnouncementDialog onSuccess={fetchAnnouncements} />
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="participation-requests" className="mt-0">
+            <ParticipationRequestsManager />
           </TabsContent>
 
           <TabsContent value="social-groups" className="mt-0">
