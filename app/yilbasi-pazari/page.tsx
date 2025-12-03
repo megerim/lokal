@@ -199,16 +199,7 @@ export default function ChristmasMarketPage() {
                     </motion.div>
                 </div>
 
-                {/* Scroll Indicator - Hidden on very small screens */}
-                <motion.div
-                    className="absolute bottom-20 sm:bottom-28 md:bottom-36 left-1/2 -translate-x-1/2 z-20 hidden sm:block"
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                >
-                    <div className="w-5 h-8 sm:w-6 sm:h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
-                        <div className="w-1 h-2 sm:w-1.5 sm:h-3 bg-white/50 rounded-full" />
-                    </div>
-                </motion.div>
+
 
                 {/* Wavy Divider */}
                 <div className="absolute bottom-0 left-0 right-0 z-10">
