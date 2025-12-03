@@ -158,7 +158,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950/50">
+    <div className="min-h-screen bg-gray-50/50">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white shadow-xl">
@@ -180,7 +180,7 @@ export default function DashboardPage() {
           {/* Mobile Dropdown */}
           <div className="md:hidden">
             <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger className="w-full h-12 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm rounded-xl">
+              <SelectTrigger className="w-full h-12 bg-white border-gray-200 shadow-sm rounded-xl">
                 <SelectValue placeholder="Sekme seçin" />
               </SelectTrigger>
               <SelectContent>
@@ -197,8 +197,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Desktop Tabs - Pill Design */}
-          <div className="hidden md:block sticky top-4 z-30 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-md py-2 -mx-4 px-4">
-            <TabsList className="w-full justify-start h-auto p-1 bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-full shadow-sm">
+          <div className="hidden md:block sticky top-4 z-30 bg-gray-50/80 backdrop-blur-md py-2 -mx-4 px-4">
+            <TabsList className="w-full justify-start h-auto p-1 bg-white/80 border border-gray-200 rounded-full shadow-sm">
               {tabItems.map((item) => (
                 <TabsTrigger
                   key={item.value}
@@ -242,7 +242,7 @@ export default function DashboardPage() {
             </TabsContent>
 
             <TabsContent value="settings" className="mt-0">
-              <Card className="border-none shadow-lg bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+              <Card className="border-none shadow-lg bg-white/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Profil Ayarları</CardTitle>
                   <CardDescription>
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12 text-muted-foreground">
-                    <div className="bg-gray-100 dark:bg-gray-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Settings className="w-10 h-10 opacity-50" />
                     </div>
                     <p className="text-lg font-medium">Ayarlar paneli hazırlanıyor...</p>
