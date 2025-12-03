@@ -9,11 +9,13 @@ import { menuData, categories } from "@/lib/menu-data"
 import { motion, AnimatePresence } from "motion/react"
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/components/auth/auth-context"
 
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [isSticky, setIsSticky] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,13 +41,25 @@ export default function MenuPage() {
       )
     }
 
+    // Filter out experiences if user is not logged in
+    if (!user) {
+      items = items.filter(item => item.category !== "experiences")
+    }
+
     return items
-  }, [selectedCategory, searchTerm])
+  }, [selectedCategory, searchTerm, user])
+
+  const filteredCategories = useMemo(() => {
+    if (!user) {
+      return categories.filter(c => c.id !== "experiences")
+    }
+    return categories
+  }, [user])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
       <MenuHero />
-      
+
       {/* Sticky Mobile Header */}
       <AnimatePresence>
         {isSticky && (
@@ -62,7 +76,7 @@ export default function MenuPage() {
             <div className="container mx-auto px-4 py-3">
               <div className="flex gap-3 items-center">
                 <MenuCategoriesSheet
-                  categories={categories}
+                  categories={filteredCategories}
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
                   itemCounts={menuData.reduce((acc, item) => {
@@ -99,7 +113,7 @@ export default function MenuPage() {
           {/* Desktop Sidebar - Hidden on Mobile */}
           <aside className="hidden lg:block lg:w-64 lg:sticky lg:top-24 lg:h-fit">
             <MenuCategories
-              categories={categories}
+              categories={filteredCategories}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
               itemCounts={menuData.reduce((acc, item) => {
@@ -114,7 +128,7 @@ export default function MenuPage() {
             <div className="lg:hidden mb-6">
               <div className="flex gap-3">
                 <MenuCategoriesSheet
-                  categories={categories}
+                  categories={filteredCategories}
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
                   itemCounts={menuData.reduce((acc, item) => {

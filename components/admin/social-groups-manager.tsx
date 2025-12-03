@@ -30,6 +30,7 @@ interface SocialGroup {
     user_name: string
     user_email: string
   }>
+  pending_requests?: { count: number }[]
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -72,7 +73,8 @@ export function SocialGroupsManager() {
             id,
             user_name,
             user_email
-          )
+          ),
+          pending_requests:membership_requests(count)
         `)
         .order("created_at", { ascending: false })
 
@@ -194,7 +196,7 @@ export function SocialGroupsManager() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-gray-600 line-clamp-2 text-sm">{group.description}</p>
-              
+
               <div className="space-y-1 text-sm text-gray-500">
                 {group.recurring_day && (
                   <div className="flex items-center">
@@ -221,6 +223,12 @@ export function SocialGroupsManager() {
                     {group.max_members && ` / ${group.max_members} maksimum`}
                   </span>
                 </div>
+                {group.pending_requests && group.pending_requests[0]?.count > 0 && (
+                  <div className="flex items-center text-orange-600 font-medium">
+                    <Users className="w-4 h-4 mr-1" />
+                    <span>{group.pending_requests[0].count} bekleyen talep</span>
+                  </div>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex gap-2">

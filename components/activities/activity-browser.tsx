@@ -25,8 +25,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { errorHandler } from "@/lib/error-handler"
-import { 
-  Search, 
+import {
+  Search,
   Filter,
   Grid3x3,
   List,
@@ -47,6 +47,7 @@ interface ActivityWithDetails extends Activity {
   activity_attendance?: ActivityAttendance[]
   participant_count?: number
   is_registered?: boolean
+  request_status?: 'pending_payment' | 'payment_submitted' | 'approved' | 'rejected' | 'cancelled' | null
   organizer?: {
     full_name?: string
     avatar_url?: string
@@ -82,7 +83,7 @@ export function ActivityBrowser() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [selectedActivity, setSelectedActivity] = useState<ActivityWithDetails | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  
+
   // Filters and search
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedType, setSelectedType] = useState("all")
@@ -95,11 +96,11 @@ export function ActivityBrowser() {
   const [showAvailableOnly, setShowAvailableOnly] = useState(false)
   const [sortOption, setSortOption] = useState<SortOption>('date_asc')
   const [showFilters, setShowFilters] = useState(false)
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(filteredActivities.length / ITEMS_PER_PAGE)
-  
+
   // Get unique locations for filter
   const locations = useMemo(() => {
     const uniqueLocations = new Set(activities.map(a => a.location).filter(Boolean))
@@ -110,7 +111,7 @@ export function ActivityBrowser() {
   const fetchActivities = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       const { data, error } = await supabase
         .from("activities")
         .select(`
@@ -129,24 +130,40 @@ export function ActivityBrowser() {
         .in('status', ['upcoming', 'ongoing'])
         .order('date_time', { ascending: true })
 
+      // Fetch user's requests
+      let userRequests: any[] = []
+      if (user) {
+        const { data: requests } = await supabase
+          .from('activity_requests')
+          .select('activity_id, status')
+          .eq('user_id', user.id)
+          .in('status', ['pending_payment', 'payment_submitted', 'approved'])
+
+        if (requests) userRequests = requests
+      }
+
       if (error) throw error
 
       const processedActivities = (data || []).map(activity => {
         const participantCount = activity.activity_attendance?.length || 0
-        const isRegistered = user ? 
-          activity.activity_attendance?.some((a: ActivityAttendance) => a.user_id === user.id) : 
+        const isRegistered = user ?
+          activity.activity_attendance?.some((a: ActivityAttendance) => a.user_id === user.id) :
           false
+
+        const userRequest = userRequests.find(r => r.activity_id === activity.id)
+        const requestStatus = userRequest?.status || null
 
         return {
           ...activity,
           participant_count: participantCount,
           is_registered: isRegistered,
+          request_status: requestStatus
         }
       })
 
       setActivities(processedActivities)
       setFilteredActivities(processedActivities)
-      
+
     } catch (error) {
       errorHandler.logError('Error fetching activities', error)
       toast({
@@ -170,7 +187,7 @@ export function ActivityBrowser() {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(activity => 
+      filtered = filtered.filter(activity =>
         activity.title.toLowerCase().includes(query) ||
         activity.description.toLowerCase().includes(query) ||
         activity.location?.toLowerCase().includes(query)
@@ -193,7 +210,7 @@ export function ActivityBrowser() {
         const activityDate = parseISO(activity.date_time)
         const fromDate = startOfDay(dateRange.from!)
         const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!)
-        
+
         return isAfter(activityDate, fromDate) && isBefore(activityDate, toDate)
       })
     }
@@ -258,12 +275,15 @@ export function ActivityBrowser() {
     }
 
     const originalActivities = [...activities];
+
+    // Optimistic update
     const newActivities = activities.map(a => {
       if (a.id === activityId) {
         return {
           ...a,
-          is_registered: isJoining,
-          participant_count: (a.participant_count || 0) + (isJoining ? 1 : -1),
+          is_registered: isJoining ? false : false, // Wait for approval
+          request_status: isJoining ? 'payment_submitted' as const : null,
+          participant_count: (a.participant_count || 0) // Count doesn't change until approved
         };
       }
       return a;
@@ -272,33 +292,48 @@ export function ActivityBrowser() {
 
     try {
       if (isJoining) {
+        // Create activity request
         const { error } = await supabase
-          .from("activity_attendance")
+          .from("activity_requests")
           .insert({
             activity_id: activityId,
             user_id: user.id,
-            user_name: user.email?.split('@')[0] || 'Anonim',
-            attended: false,
+            status: 'payment_submitted',
+            payment_method: 'bank_transfer'
           });
 
         if (error) throw error;
 
         toast({
-          title: "Başarılı",
-          description: "Aktiviteye kaydınız alındı.",
+          title: "Ödeme Bildirimi Alındı",
+          description: "Katılım talebiniz ve ödeme bildiriminiz alındı. Yönetici onayından sonra kaydınız tamamlanacaktır.",
         });
       } else {
-        const { error } = await supabase
+        // Cancel request and/or leave activity
+
+        // 1. Delete from activity_attendance if exists
+        const { error: attendanceError } = await supabase
           .from("activity_attendance")
           .delete()
           .eq('activity_id', activityId)
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (attendanceError) throw attendanceError;
+
+        // 2. Cancel/Delete request
+        // We can either delete the request or update status to cancelled. 
+        // Deleting is cleaner for now to allow re-request easily.
+        const { error: requestError } = await supabase
+          .from("activity_requests")
+          .delete()
+          .eq('activity_id', activityId)
+          .eq('user_id', user.id);
+
+        if (requestError) throw requestError;
 
         toast({
           title: "Başarılı",
-          description: "Aktivite kaydınız iptal edildi.",
+          description: "Aktivite kaydınız/talebiniz iptal edildi.",
         });
       }
 
@@ -309,8 +344,8 @@ export function ActivityBrowser() {
       errorHandler.logError('Error toggling activity participation', error);
       toast({
         title: "Hata",
-        description: isJoining ? 
-          "Aktiviteye katılırken bir hata oluştu." : 
+        description: isJoining ?
+          "Aktiviteye katılırken bir hata oluştu." :
           "Aktiviteden ayrılırken bir hata oluştu.",
         variant: "destructive",
       });
@@ -327,7 +362,7 @@ export function ActivityBrowser() {
     setSortOption('date_asc')
   }
 
-  const hasActiveFilters = searchQuery || selectedType !== 'all' || selectedLocation !== 'all' || 
+  const hasActiveFilters = searchQuery || selectedType !== 'all' || selectedLocation !== 'all' ||
     dateRange.from || showFullOnly || showAvailableOnly
 
   if (loading) {
@@ -340,7 +375,7 @@ export function ActivityBrowser() {
             <Skeleton className="h-10 w-20" />
           </div>
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <Skeleton key={i} className="h-72" />
@@ -363,7 +398,7 @@ export function ActivityBrowser() {
             className="pl-10"
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             variant={showFilters ? "default" : "outline"}
@@ -379,7 +414,7 @@ export function ActivityBrowser() {
               </Badge>
             )}
           </Button>
-          
+
           <div className="flex rounded-lg border">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -418,7 +453,7 @@ export function ActivityBrowser() {
               </Button>
             )}
           </div>
-          
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {/* Activity Type Filter */}
             <div className="space-y-2">
@@ -559,8 +594,8 @@ export function ActivityBrowser() {
       ) : (
         <>
           <div className={cn(
-            viewMode === 'grid' 
-              ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3" 
+            viewMode === 'grid'
+              ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
               : "space-y-4"
           )}>
             {paginatedActivities.map(activity => (
@@ -586,7 +621,7 @@ export function ActivityBrowser() {
                 <ChevronLeft className="h-4 w-4" />
                 Önceki
               </Button>
-              
+
               <div className="flex gap-1">
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   let pageNum
@@ -599,7 +634,7 @@ export function ActivityBrowser() {
                   } else {
                     pageNum = currentPage - 2 + i
                   }
-                  
+
                   return (
                     <Button
                       key={pageNum}
@@ -613,7 +648,7 @@ export function ActivityBrowser() {
                   )
                 })}
               </div>
-              
+
               <Button
                 variant="outline"
                 size="sm"

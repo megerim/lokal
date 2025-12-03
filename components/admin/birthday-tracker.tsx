@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/hooks/use-toast"
-import { 
-  Cake, 
-  Gift, 
-  Calendar, 
-  Coffee, 
+import {
+  Cake,
+  Gift,
+  Calendar,
+  Coffee,
   CheckCircle,
   AlertCircle,
   Users
@@ -52,7 +52,7 @@ export function BirthdayTracker() {
       const today = new Date()
       const currentMonth = today.getMonth()
       const currentDay = today.getDate()
-      
+
       // Categorize birthdays
       const todayList: BirthdayUser[] = []
       const upcomingList: BirthdayUser[] = []
@@ -61,7 +61,7 @@ export function BirthdayTracker() {
         const birthday = new Date(profile.birthday)
         const birthMonth = birthday.getMonth()
         const birthDay = birthday.getDate()
-        
+
         // Check if user already has a birthday voucher this year
         const { data: existingVoucher } = await supabase
           .from("coffee_vouchers")
@@ -80,15 +80,15 @@ export function BirthdayTracker() {
         // Today's birthdays
         if (birthMonth === currentMonth && birthDay === currentDay) {
           todayList.push(userBirthday)
-        } 
+        }
         // Upcoming birthdays (next 7 days)
         else {
           const thisYearBirthday = new Date(today.getFullYear(), birthMonth, birthDay)
           const nextYearBirthday = new Date(today.getFullYear() + 1, birthMonth, birthDay)
-          
+
           const birthdayToCheck = thisYearBirthday > today ? thisYearBirthday : nextYearBirthday
           const daysUntil = Math.floor((birthdayToCheck.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-          
+
           if (daysUntil <= 7 && daysUntil > 0) {
             upcomingList.push(userBirthday)
           }
@@ -115,11 +115,11 @@ export function BirthdayTracker() {
 
   const generateBirthdayVoucher = async (user: BirthdayUser) => {
     setGeneratingVoucher(user.user_id)
-    
+
     try {
       // Generate voucher code
       const voucherCode = `LOKAL-BDAY-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-      
+
       // Create voucher
       const { error } = await supabase.from("coffee_vouchers").insert({
         user_id: user.user_id,
@@ -133,8 +133,8 @@ export function BirthdayTracker() {
       // Update voucher count in profile
       await supabase
         .from("user_profiles")
-        .update({ 
-          coffee_voucher_count: (user.coffee_voucher_count || 0) + 1 
+        .update({
+          coffee_voucher_count: (user.coffee_voucher_count || 0) + 1
         })
         .eq("user_id", user.user_id)
 
@@ -160,7 +160,7 @@ export function BirthdayTracker() {
   // Auto-generate vouchers for today's birthdays
   const autoGenerateVouchers = async () => {
     const usersWithoutVouchers = todayBirthdays.filter(u => !u.has_voucher)
-    
+
     if (usersWithoutVouchers.length === 0) return
 
     toast({
@@ -193,8 +193,8 @@ export function BirthdayTracker() {
               </CardDescription>
             </div>
             {todayBirthdays.some(u => !u.has_voucher) && (
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={autoGenerateVouchers}
                 variant="outline"
               >
@@ -214,10 +214,10 @@ export function BirthdayTracker() {
               {todayBirthdays.map((user) => (
                 <div
                   key={user.user_id}
-                  className="flex items-center justify-between p-3 border rounded-lg bg-pink-50 dark:bg-pink-900/20"
+                  className="flex items-center justify-between p-3 border rounded-lg bg-pink-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
                       <Cake className="w-5 h-5 text-pink-600" />
                     </div>
                     <div>
@@ -279,14 +279,14 @@ export function BirthdayTracker() {
                     birthday.getMonth(),
                     birthday.getDate()
                   )
-                  
+
                   return (
                     <div
                       key={user.user_id}
                       className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                           <Calendar className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>

@@ -13,9 +13,10 @@ import { ParticipantsDialog } from "@/components/admin/participants-dialog"
 import { ActivityRequestsDialog } from "@/components/admin/activity-requests-dialog"
 import { SocialGroupsManager } from "@/components/admin/social-groups-manager"
 import { ProductsManager } from "@/components/admin/products-manager"
+import { MarketApplications } from "@/components/admin/market-applications"
 import { useToast } from "@/hooks/use-toast"
 import { errorHandler } from "@/lib/error-handler"
-import { Calendar, Users, Edit, Trash2, Megaphone, UsersRound, Package, Send, QrCode, ArrowRight, MessageSquare } from "lucide-react"
+import { Calendar, Users, Edit, Trash2, Megaphone, UsersRound, Package, Send, QrCode, ArrowRight, MessageSquare, Store } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -112,6 +113,7 @@ export function AdminDashboard() {
     { value: "announcements", label: "Duyurular", icon: Megaphone },
     { value: "social-groups", label: "Sosyal Gruplar", icon: UsersRound },
     { value: "products", label: "Ürünler", icon: Package },
+    { value: "market-applications", label: "Yılbaşı Pazarı", icon: Store },
     { value: "vouchers", label: "Kuponlar", icon: QrCode },
   ]
 
@@ -141,8 +143,8 @@ export function AdminDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
         {/* Modern Pill Tabs */}
-        <div className="sticky top-4 z-30 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-md py-2 -mx-4 px-4">
-          <TabsList className="w-full justify-start h-auto p-1 bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-full shadow-sm overflow-x-auto">
+        <div className="sticky top-4 z-30 bg-gray-50/80 backdrop-blur-md py-2 -mx-4 px-4">
+          <TabsList className="w-full justify-start h-auto p-1 bg-white/80 border border-gray-200 rounded-full shadow-sm overflow-x-auto">
             {tabItems.map((item) => (
               <TabsTrigger
                 key={item.value}
@@ -173,7 +175,7 @@ export function AdminDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {announcements.map((announcement) => (
-                <Card key={announcement.id} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 group">
+                <Card key={announcement.id} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white group">
                   {announcement.image_url && (
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
@@ -196,10 +198,10 @@ export function AdminDashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 dark:text-gray-300 line-clamp-2 text-sm mb-4">
+                    <p className="text-gray-600 line-clamp-2 text-sm mb-4">
                       {announcement.description}
                     </p>
-                    <div className="flex items-center text-sm text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded-lg">
+                    <div className="flex items-center text-sm text-gray-500 bg-gray-50 p-2 rounded-lg">
                       <Users className="w-4 h-4 mr-2 text-blue-500" />
                       <span className="font-medium">{announcement.katilimcilar?.length || 0}</span>
                       <span className="ml-1">katılımcı</span>
@@ -240,12 +242,12 @@ export function AdminDashboard() {
             </div>
 
             {announcements.length === 0 && !loading && (
-              <div className="text-center py-16 px-4 rounded-3xl bg-gray-50 dark:bg-gray-800/50 border border-dashed border-gray-200 dark:border-gray-700">
-                <div className="bg-white dark:bg-gray-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <div className="text-center py-16 px-4 rounded-3xl bg-gray-50 border border-dashed border-gray-200">
+                <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                   <Megaphone className="w-10 h-10 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Henüz duyuru yok</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   Topluluğunuzu bilgilendirmek için ilk duyurunuzu veya etkinliğinizi oluşturun.
                 </p>
                 <AddAnnouncementDialog onSuccess={fetchAnnouncements} />
@@ -261,8 +263,12 @@ export function AdminDashboard() {
             <ProductsManager />
           </TabsContent>
 
+          <TabsContent value="market-applications" className="mt-0">
+            <MarketApplications />
+          </TabsContent>
+
           <TabsContent value="vouchers" className="mt-0 space-y-6">
-            <Card className="border-none shadow-lg rounded-2xl bg-white dark:bg-gray-900">
+            <Card className="border-none shadow-lg rounded-2xl bg-white">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <QrCode className="w-6 h-6 text-purple-600" />
@@ -272,7 +278,7 @@ export function AdminDashboard() {
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
                   <Link href="/admin/send-voucher" passHref className="block h-full">
-                    <div className="h-full p-6 rounded-xl border-2 border-dashed border-gray-200 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all cursor-pointer group">
+                    <div className="h-full p-6 rounded-xl border-2 border-dashed border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all cursor-pointer group">
                       <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Send className="w-6 h-6 text-purple-600" />
                       </div>
@@ -285,7 +291,7 @@ export function AdminDashboard() {
                   </Link>
 
                   <Link href="/admin/redeem-voucher" passHref className="block h-full">
-                    <div className="h-full p-6 rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all cursor-pointer group">
+                    <div className="h-full p-6 rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer group">
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <QrCode className="w-6 h-6 text-blue-600" />
                       </div>

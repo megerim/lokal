@@ -117,7 +117,7 @@ export function MembershipRequestDialog({ group, onSuccess }: MembershipRequestD
       <DialogTrigger asChild>
         <Button variant="default" size="sm">
           <Users className="w-4 h-4 mr-2" />
-          Gruba Katıl
+          Katılma Talebi
         </Button>
       </DialogTrigger>
       <DialogContent>

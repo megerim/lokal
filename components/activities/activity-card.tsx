@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
-import { 
+import {
   Calendar,
   Clock,
   MapPin,
@@ -25,11 +25,13 @@ import { format, parseISO, isPast, isToday, isTomorrow, differenceInDays } from 
 import { tr } from "date-fns/locale"
 import Image from "next/image"
 import type { Activity, ActivityAttendance } from "@/lib/types"
+import { PaymentModal } from "./payment-modal"
 
 interface ActivityWithDetails extends Activity {
   activity_attendance?: ActivityAttendance[]
   participant_count?: number
   is_registered?: boolean
+  request_status?: 'pending_payment' | 'payment_submitted' | 'approved' | 'rejected' | 'cancelled' | null
   organizer?: {
     full_name?: string
     avatar_url?: string
@@ -56,17 +58,18 @@ const TYPE_LABELS: Record<string, { label: string; color: string }> = {
 
 export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }: ActivityCardProps) {
   const [isJoining, setIsJoining] = useState(false)
-  
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+
   const activityDate = parseISO(activity.date_time)
   const isPastActivity = isPast(activityDate)
   const isCancelled = activity.status === 'cancelled'
-  const isFull = activity.max_participants ? 
+  const isFull = activity.max_participants ?
     (activity.participant_count || 0) >= activity.max_participants : false
-  
-  const spotsLeft = activity.max_participants ? 
+
+  const spotsLeft = activity.max_participants ?
     activity.max_participants - (activity.participant_count || 0) : null
-  
-  const participationPercentage = activity.max_participants ? 
+
+  const participationPercentage = activity.max_participants ?
     ((activity.participant_count || 0) / activity.max_participants) * 100 : 0
 
   // Format date label
@@ -80,8 +83,24 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
 
   const handleJoinClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
+
+    // If already registered or has pending request, this is a "Leave/Cancel" action
+    if (activity.is_registered || activity.request_status) {
+      if (confirm(activity.is_registered ? "Aktiviteden ayrılmak istediğinize emin misiniz?" : "Katılım talebinizi iptal etmek istediğinize emin misiniz?")) {
+        setIsJoining(true)
+        await onJoinToggle(activity.id, false)
+        setIsJoining(false)
+      }
+      return
+    }
+
+    // Otherwise, open payment modal
+    setIsPaymentModalOpen(true)
+  }
+
+  const handlePaymentConfirm = async () => {
     setIsJoining(true)
-    await onJoinToggle(activity.id, !activity.is_registered)
+    await onJoinToggle(activity.id, true)
     setIsJoining(false)
   }
 
@@ -89,7 +108,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
 
   if (viewMode === 'list') {
     return (
-      <Card 
+      <Card
         className={cn(
           "hover:shadow-lg transition-all cursor-pointer",
           isCancelled && "opacity-60",
@@ -114,7 +133,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
               )}
             </div>
           )}
-          
+
           <div className="flex-1 p-6">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -126,11 +145,11 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                     </Badge>
                   )}
                 </div>
-                
+
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                   {activity.description}
                 </p>
-                
+
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -155,7 +174,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex flex-col items-end gap-2">
                 {!isPastActivity && !isCancelled && (
                   <>
@@ -164,6 +183,11 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                         <CheckCircle className="h-3 w-3" />
                         Kayıtlısınız
                       </Badge>
+                    ) : activity.request_status === 'payment_submitted' || activity.request_status === 'pending_payment' ? (
+                      <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-800 hover:bg-orange-100">
+                        <Clock className="h-3 w-3" />
+                        Onay Bekliyor
+                      </Badge>
                     ) : isFull ? (
                       <Badge variant="secondary">Dolu</Badge>
                     ) : spotsLeft && spotsLeft <= 5 ? (
@@ -171,12 +195,12 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                     ) : null}
                   </>
                 )}
-                
+
                 <div className="flex gap-2">
                   {!isPastActivity && !isCancelled && !isFull && (
                     <Button
                       size="sm"
-                      variant={activity.is_registered ? "outline" : "default"}
+                      variant={activity.is_registered || activity.request_status ? "outline" : "default"}
                       onClick={handleJoinClick}
                       disabled={isJoining}
                       className="gap-1"
@@ -185,6 +209,11 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                         <>
                           <UserMinus className="h-4 w-4" />
                           Ayrıl
+                        </>
+                      ) : activity.request_status ? (
+                        <>
+                          <XCircle className="h-4 w-4" />
+                          İptal Et
                         </>
                       ) : (
                         <>
@@ -217,7 +246,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
 
   // Grid View
   return (
-    <Card 
+    <Card
       className={cn(
         "group hover:shadow-lg transition-all cursor-pointer overflow-hidden",
         isCancelled && "opacity-60",
@@ -257,6 +286,14 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
               </Badge>
             </div>
           )}
+          {!activity.is_registered && (activity.request_status === 'payment_submitted' || activity.request_status === 'pending_payment') && !isPastActivity && !isCancelled && (
+            <div className="absolute top-2 right-2">
+              <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-800">
+                <Clock className="h-3 w-3" />
+                Onay Bekliyor
+              </Badge>
+            </div>
+          )}
         </div>
       ) : (
         <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative">
@@ -275,7 +312,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
           </div>
         </div>
       )}
-      
+
       <CardHeader className="pb-3">
         <div className="space-y-1">
           <h3 className="font-semibold line-clamp-1 group-hover:text-primary transition-colors">
@@ -286,7 +323,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
           </p>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-3">
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2">
@@ -296,7 +333,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span>{format(activityDate, "HH:mm")}</span>
           </div>
-          
+
           {activity.location && (
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -304,7 +341,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
             </div>
           )}
         </div>
-        
+
         {/* Participation Progress */}
         {activity.max_participants && (
           <div className="space-y-2">
@@ -324,7 +361,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
             <Progress value={participationPercentage} className="h-2" />
           </div>
         )}
-        
+
         {/* Organizer Info */}
         {activity.organizer && (
           <div className="flex items-center gap-2 pt-2 border-t">
@@ -340,7 +377,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
           </div>
         )}
       </CardContent>
-      
+
       <CardFooter className="pt-3">
         {isPastActivity ? (
           <Badge variant="secondary" className="w-full justify-center">
@@ -355,7 +392,7 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
             {!isFull && (
               <Button
                 className="flex-1"
-                variant={activity.is_registered ? "outline" : "default"}
+                variant={activity.is_registered || activity.request_status ? "outline" : "default"}
                 size="sm"
                 onClick={handleJoinClick}
                 disabled={isJoining}
@@ -364,6 +401,11 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
                   <>
                     <UserMinus className="h-4 w-4 mr-1" />
                     Ayrıl
+                  </>
+                ) : activity.request_status ? (
+                  <>
+                    <XCircle className="h-4 w-4 mr-1" />
+                    İptal Et
                   </>
                 ) : (
                   <>
@@ -391,6 +433,12 @@ export function ActivityCard({ activity, viewMode, onJoinToggle, onViewDetails }
           </div>
         )}
       </CardFooter>
+      <PaymentModal
+        activity={activity}
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onConfirm={handlePaymentConfirm}
+      />
     </Card>
   )
 }

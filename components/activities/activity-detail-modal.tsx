@@ -44,11 +44,13 @@ import { format, parseISO, isPast, isToday, isTomorrow, differenceInDays, addHou
 import { tr } from "date-fns/locale"
 import Image from "next/image"
 import type { Activity, ActivityAttendance } from "@/lib/types"
+import { PaymentModal } from "./payment-modal"
 
 interface ActivityWithDetails extends Activity {
   activity_attendance?: ActivityAttendance[]
   participant_count?: number
   is_registered?: boolean
+  request_status?: 'pending_payment' | 'payment_submitted' | 'approved' | 'rejected' | 'cancelled' | null
   organizer?: {
     full_name?: string
     avatar_url?: string
@@ -84,48 +86,49 @@ const TYPE_LABELS: Record<string, { label: string; color: string; icon: string }
   other: { label: "Diğer", color: "bg-gray-100 text-gray-800", icon: "📌" }
 }
 
-export function ActivityDetailModal({ 
-  activity, 
-  isOpen, 
-  onClose, 
+export function ActivityDetailModal({
+  activity,
+  isOpen,
+  onClose,
   onJoinToggle,
-  onUpdate 
+  onUpdate
 }: ActivityDetailModalProps) {
   const { user } = useAuth()
   const { toast } = useToast()
   const supabase = useMemo(() => createClient(), [])
-  
+
   const [isJoining, setIsJoining] = useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [participants, setParticipants] = useState<ActivityAttendance[]>([])
   const [relatedActivities, setRelatedActivities] = useState<ActivityWithDetails['related_activities']>([])
   const [showAllParticipants, setShowAllParticipants] = useState(false)
   const [isCopying, setIsCopying] = useState(false)
-  
+
   const activityDate = parseISO(activity.date_time)
   const isPastActivity = isPast(activityDate)
   const isCancelled = activity.status === 'cancelled'
-  const isFull = activity.max_participants ? 
+  const isFull = activity.max_participants ?
     (activity.participant_count || 0) >= activity.max_participants : false
-  
-  const spotsLeft = activity.max_participants ? 
+
+  const spotsLeft = activity.max_participants ?
     activity.max_participants - (activity.participant_count || 0) : null
-  
-  const participationPercentage = activity.max_participants ? 
+
+  const participationPercentage = activity.max_participants ?
     ((activity.participant_count || 0) / activity.max_participants) * 100 : 0
-  
+
   const typeInfo = activity.activity_type ? TYPE_LABELS[activity.activity_type] : null
-  
+
   // Fetch additional details
   useEffect(() => {
     if (!isOpen) return
-    
+
     const fetchDetails = async () => {
       try {
         // Fetch participants
         if (activity.activity_attendance) {
           setParticipants(activity.activity_attendance)
         }
-        
+
         // Fetch related activities
         const { data: related, error } = await supabase
           .from("activities")
@@ -135,7 +138,7 @@ export function ActivityDetailModal({
           .in('status', ['upcoming', 'ongoing'])
           .order('date_time', { ascending: true })
           .limit(3)
-        
+
         if (!error && related) {
           // Get participant counts for related activities
           const relatedWithCounts = await Promise.all(
@@ -144,24 +147,24 @@ export function ActivityDetailModal({
                 .from("activity_attendance")
                 .select('*', { count: 'exact', head: true })
                 .eq('activity_id', act.id)
-              
+
               return {
                 ...act,
                 participant_count: count || 0
               }
             })
           )
-          
+
           setRelatedActivities(relatedWithCounts)
         }
       } catch (error) {
         errorHandler.logError('Error fetching activity details', error)
       }
     }
-    
+
     fetchDetails()
   }, [isOpen, activity, supabase])
-  
+
   const handleJoin = async () => {
     if (!user) {
       toast({
@@ -171,23 +174,36 @@ export function ActivityDetailModal({
       })
       return
     }
-    
-    setIsJoining(true)
-    await onJoinToggle(activity.id, !activity.is_registered)
-    setIsJoining(false)
-    
-    if (onUpdate) {
-      onUpdate()
+
+    // If already registered or has pending request, this is a "Leave/Cancel" action
+    if (activity.is_registered || activity.request_status) {
+      if (confirm(activity.is_registered ? "Aktiviteden ayrılmak istediğinize emin misiniz?" : "Katılım talebinizi iptal etmek istediğinize emin misiniz?")) {
+        setIsJoining(true)
+        await onJoinToggle(activity.id, false)
+        setIsJoining(false)
+        if (onUpdate) onUpdate()
+      }
+      return
     }
+
+    // Otherwise, open payment modal
+    setIsPaymentModalOpen(true)
   }
-  
+
+  const handlePaymentConfirm = async () => {
+    setIsJoining(true)
+    await onJoinToggle(activity.id, true)
+    setIsJoining(false)
+    if (onUpdate) onUpdate()
+  }
+
   const handleShare = async () => {
     const shareData = {
       title: activity.title,
       text: `${activity.title} - ${format(activityDate, "d MMMM yyyy HH:mm", { locale: tr })}`,
       url: window.location.href,
     }
-    
+
     if (navigator.share && navigator.canShare(shareData)) {
       try {
         await navigator.share(shareData)
@@ -199,7 +215,7 @@ export function ActivityDetailModal({
       handleCopyLink()
     }
   }
-  
+
   const handleCopyLink = async () => {
     setIsCopying(true)
     try {
@@ -218,7 +234,7 @@ export function ActivityDetailModal({
       setTimeout(() => setIsCopying(false), 2000)
     }
   }
-  
+
   const getDateLabel = () => {
     if (isToday(activityDate)) return "Bugün"
     if (isTomorrow(activityDate)) return "Yarın"
@@ -226,9 +242,9 @@ export function ActivityDetailModal({
     if (daysUntil > 0 && daysUntil <= 7) return `${daysUntil} gün sonra`
     return format(activityDate, "d MMMM yyyy", { locale: tr })
   }
-  
+
   const displayedParticipants = showAllParticipants ? participants : participants.slice(0, 10)
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0">
@@ -251,7 +267,7 @@ export function ActivityDetailModal({
               )}
             </div>
           )}
-          
+
           <div className="p-6 space-y-6">
             {/* Title and Type */}
             <div>
@@ -269,7 +285,7 @@ export function ActivityDetailModal({
                     </Badge>
                   )}
                 </div>
-                
+
                 {/* Share Buttons */}
                 <div className="flex gap-2">
                   <Button
@@ -292,7 +308,7 @@ export function ActivityDetailModal({
                   </Button>
                 </div>
               </div>
-              
+
               {/* Status Badges */}
               <div className="flex flex-wrap gap-2">
                 {isPastActivity && (
@@ -307,12 +323,18 @@ export function ActivityDetailModal({
                 {isFull && !activity.is_registered && !isPastActivity && !isCancelled && (
                   <Badge variant="secondary">Kontenjan Dolu</Badge>
                 )}
+                {!activity.is_registered && (activity.request_status === 'payment_submitted' || activity.request_status === 'pending_payment') && !isPastActivity && !isCancelled && (
+                  <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-800 hover:bg-orange-100">
+                    <Clock className="h-3 w-3" />
+                    Onay Bekliyor
+                  </Badge>
+                )}
                 {spotsLeft && spotsLeft <= 5 && !isFull && !isPastActivity && !isCancelled && (
                   <Badge variant="destructive">Son {spotsLeft} yer!</Badge>
                 )}
               </div>
             </div>
-            
+
             {/* Key Information */}
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="p-4 space-y-3">
@@ -325,9 +347,9 @@ export function ActivityDetailModal({
                     </p>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center gap-3">
                   <Clock className="h-5 w-5 text-primary" />
                   <div>
@@ -342,7 +364,7 @@ export function ActivityDetailModal({
                     )}
                   </div>
                 </div>
-                
+
                 {activity.location && (
                   <>
                     <Separator />
@@ -369,7 +391,7 @@ export function ActivityDetailModal({
                   </>
                 )}
               </Card>
-              
+
               <Card className="p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-primary" />
@@ -381,7 +403,7 @@ export function ActivityDetailModal({
                     </p>
                   </div>
                 </div>
-                
+
                 {activity.max_participants && (
                   <>
                     <Progress value={participationPercentage} className="h-2" />
@@ -390,22 +412,27 @@ export function ActivityDetailModal({
                     </p>
                   </>
                 )}
-                
+
                 <Separator />
-                
+
                 {/* Action Button */}
                 {!isPastActivity && !isCancelled && (
                   <Button
                     className="w-full"
-                    variant={activity.is_registered ? "outline" : "default"}
+                    variant={activity.is_registered || activity.request_status ? "outline" : "default"}
                     size="lg"
                     onClick={handleJoin}
-                    disabled={isJoining || (isFull && !activity.is_registered)}
+                    disabled={isJoining || (isFull && !activity.is_registered && !activity.request_status)}
                   >
                     {activity.is_registered ? (
                       <>
                         <UserMinus className="h-4 w-4 mr-2" />
                         Katılımdan Vazgeç
+                      </>
+                    ) : activity.request_status ? (
+                      <>
+                        <XCircle className="h-4 w-4 mr-2" />
+                        İptal Et
                       </>
                     ) : isFull ? (
                       <>
@@ -422,7 +449,7 @@ export function ActivityDetailModal({
                 )}
               </Card>
             </div>
-            
+
             {/* Description */}
             <div>
               <h3 className="text-lg font-semibold mb-3">Aktivite Hakkında</h3>
@@ -430,7 +457,7 @@ export function ActivityDetailModal({
                 {activity.description}
               </p>
             </div>
-            
+
             {/* Organizer */}
             {activity.organizer && (
               <div>
@@ -479,7 +506,7 @@ export function ActivityDetailModal({
                 </Card>
               </div>
             )}
-            
+
             {/* Participants */}
             {participants.length > 0 && (
               <div>
@@ -528,15 +555,15 @@ export function ActivityDetailModal({
                 </Card>
               </div>
             )}
-            
+
             {/* Related Activities */}
             {relatedActivities && relatedActivities.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold mb-3">Benzer Aktiviteler</h3>
                 <div className="grid gap-3">
                   {relatedActivities.map((related) => (
-                    <Card 
-                      key={related.id} 
+                    <Card
+                      key={related.id}
                       className="p-4 hover:bg-muted/50 transition-colors cursor-pointer"
                       onClick={() => {
                         // TODO: Navigate to activity or update modal content
@@ -567,6 +594,12 @@ export function ActivityDetailModal({
           </div>
         </ScrollArea>
       </DialogContent>
+      <PaymentModal
+        activity={activity}
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onConfirm={handlePaymentConfirm}
+      />
     </Dialog>
   )
 }

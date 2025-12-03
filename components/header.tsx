@@ -19,6 +19,7 @@ export function Header() {
     { name: "Giriş", href: "/" },
     { name: "Hakkımızda", href: "/hakkimizda" },
     { name: "Etkinlikler", href: "/duyurular" },
+    { name: "Yılbaşı Pazarı", href: "/yilbasi-pazari" },
     { name: "Menü", href: "/menu" },
     { name: "Ürünler", href: "/urunler" },
     { name: "Deneyimler", href: "/sosyal-gruplar" },
