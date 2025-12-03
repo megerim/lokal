@@ -35,7 +35,7 @@ export function MinimalistFooter() {
             <p className="text-gray-600 mb-6 leading-relaxed max-w-sm">
               Yerel toplulukları güçlendirmek ve insanları bir araya getirmek için buradayız.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex gap-3">
               {socialLinks.map((social) => (
@@ -95,7 +95,10 @@ export function MinimalistFooter() {
               </li>
               <li className="text-gray-600 inline-flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5" />
-                <span>Tekirdağ, Türkiye</span>
+                <span>
+                  Hürriyet Mh. Öğretmenler Cd.
+                  Aka Koleji Karşısı, Süleymanpaşa/Tekirdağ
+                </span>
               </li>
             </ul>
           </div>

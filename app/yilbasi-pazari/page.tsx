@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, MapPin, Gift, ShoppingBag, Star, Music, Coffee, Sparkles, TreePine, Heart, Users, ChevronDown, LogIn, Snowflake } from "lucide-react"
+import { Calendar, MapPin, Gift, ShoppingBag, Star, Music, Coffee, Sparkles, TreePine, Heart, Users, ChevronDown, LogIn, Snowflake, Check } from "lucide-react"
 import { MarketApplicationForm } from "@/components/christmas/market-application-form"
 import { useAuth } from "@/components/auth/auth-context"
 import Link from "next/link"
@@ -33,7 +33,7 @@ export default function ChristmasMarketPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-900 via-red-950 to-green-950">
             {/* Hero Section */}
-            <div className="relative h-screen overflow-hidden flex items-center justify-center">
+            <div className="relative min-h-screen py-20 overflow-hidden flex items-center justify-center">
                 {/* Decorative Elements - Hidden on mobile */}
                 <div className="absolute top-10 left-10 opacity-20 hidden sm:block">
                     <TreePine className="w-16 md:w-24 lg:w-32 h-16 md:h-24 lg:h-32 text-green-400" />
@@ -80,10 +80,12 @@ export default function ChristmasMarketPage() {
 
                 {/* Christmas Lights Effect */}
                 <div className="absolute top-2 left-0 right-0 h-4 flex justify-around items-center overflow-visible z-30">
+                    {/* Green rope behind the lights */}
+                    <div className="absolute top-1/2 left-0 right-0 h-1 bg-green-800 -translate-y-1/2 rounded-full" />
                     {Array.from({ length: 20 }).map((_, i) => (
                         <motion.div
                             key={i}
-                            className="w-2 h-2 sm:w-3 sm:h-3 rounded-full shadow-lg"
+                            className="w-2 h-2 sm:w-3 sm:h-3 rounded-full shadow-lg relative z-10"
                             style={{
                                 backgroundColor: ['#ef4444', '#22c55e', '#eab308', '#3b82f6', '#ec4899'][i % 5],
                                 boxShadow: `0 0 10px ${['#ef4444', '#22c55e', '#eab308', '#3b82f6', '#ec4899'][i % 5]}`,
@@ -101,102 +103,125 @@ export default function ChristmasMarketPage() {
                     ))}
                 </div>
 
-                <div className="relative z-20 container mx-auto px-4 sm:px-6 text-center text-white">
-                    <motion.div
-                        className="flex flex-col items-center"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1 }}
-                    >
-                        {/* Main Title with Decorations */}
-                        <div className="relative inline-block px-4">
-                            <motion.div
-                                className="absolute -left-12 lg:-left-16 top-1/2 -translate-y-1/2 hidden md:block"
-                                animate={{ rotate: [0, 10, -10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                            >
-                                <span className="text-4xl lg:text-6xl">🎄</span>
-                            </motion.div>
-
-                            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold mb-6 sm:mb-8 pb-2 font-quicksand bg-gradient-to-r from-red-200 via-white to-green-200 bg-clip-text text-transparent drop-shadow-2xl">
-                                Yılbaşı Pazarı
-                            </h1>
-
-                            <motion.div
-                                className="absolute -right-12 lg:-right-16 top-1/2 -translate-y-1/2 hidden md:block"
-                                animate={{ rotate: [0, -10, 10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                            >
-                                <span className="text-4xl lg:text-6xl">🎁</span>
-                            </motion.div>
-                        </div>
-
-                        <motion.p
-                            className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-10 font-light leading-relaxed px-2"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.6 }}
-                        >
-                            Yılın en güzel günü bir araya geldiğimiz gün
-                            <br className="hidden md:block" />
-                            <span className="text-yellow-300 font-medium">#lokalbiryeniyılpazarı</span>
-                        </motion.p>
-
-                        {/* CTA Buttons */}
+                <div className="relative z-20 container mx-auto px-4 sm:px-6 text-white">
+                    <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+                        {/* Hero Text Content */}
                         <motion.div
-                            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4 sm:px-0"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8 }}
+                            className="flex flex-col items-center lg:items-start text-center lg:text-left flex-1"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 1 }}
                         >
-                            {user ? (
-                                <Button
-                                    size="lg"
-                                    className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full shadow-xl shadow-red-500/30 font-semibold group"
-                                    onClick={handleApplicationClick}
+                            {/* Main Title with Decorations */}
+                            <div className="relative inline-block px-4">
+                                <motion.div
+                                    className="absolute -left-12 lg:-left-16 top-1/2 -translate-y-1/2 hidden md:block"
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
                                 >
-                                    <Gift className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:animate-bounce" />
-                                    Stant Başvurusu Yap
-                                </Button>
-                            ) : (
-                                <Link href="/auth?redirect=/yilbasi-pazari">
+                                    <span className="text-4xl lg:text-6xl">🎄</span>
+                                </motion.div>
+
+                                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 pb-2 font-quicksand bg-gradient-to-r from-red-200 via-white to-green-200 bg-clip-text text-transparent drop-shadow-2xl">
+                                    Yılbaşı Pazarı
+                                </h1>
+
+                                <motion.div
+                                    className="absolute -right-12 lg:-right-16 top-1/2 -translate-y-1/2 hidden md:block lg:hidden"
+                                    animate={{ rotate: [0, -10, 10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                >
+                                    <span className="text-4xl lg:text-6xl">🎁</span>
+                                </motion.div>
+                            </div>
+
+                            <motion.p
+                                className="text-base sm:text-lg md:text-xl lg:text-xl text-white/80 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-xl mb-6 sm:mb-8 md:mb-10 font-light leading-relaxed px-2 lg:px-0"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                            >
+                                Yılın en güzel günü bir araya geldiğimiz gün
+                                <br className="hidden md:block" />
+                                <span className="text-yellow-300 font-medium">#lokalbiryeniyılpazarı</span>
+                            </motion.p>
+
+                            {/* CTA Buttons */}
+                            <motion.div
+                                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center w-full px-4 sm:px-0"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.8 }}
+                            >
+                                {user ? (
                                     <Button
                                         size="lg"
                                         className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full shadow-xl shadow-red-500/30 font-semibold group"
+                                        onClick={handleApplicationClick}
                                     >
-                                        <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                        Başvurmak için Giriş Yap
+                                        <Gift className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:animate-bounce" />
+                                        Stant Başvurusu Yap
                                     </Button>
-                                </Link>
-                            )}
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="w-full sm:w-auto border-2 border-white/40 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full"
-                                onClick={() => document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' })}
+                                ) : (
+                                    <Link href="/auth?redirect=/yilbasi-pazari">
+                                        <Button
+                                            size="lg"
+                                            className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full shadow-xl shadow-red-500/30 font-semibold group"
+                                        >
+                                            <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                            Başvurmak için Giriş Yap
+                                        </Button>
+                                    </Link>
+                                )}
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    className="w-full sm:w-auto border-2 border-white/40 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full"
+                                    onClick={() => document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' })}
+                                >
+                                    Detayları İncele
+                                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 ml-2 animate-bounce" />
+                                </Button>
+                            </motion.div>
+
+                            {/* Quick Info Pills */}
+                            <motion.div
+                                className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-2 sm:gap-4 mt-8 sm:mt-12"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1 }}
                             >
-                                Detayları İncele
-                                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 ml-2 animate-bounce" />
-                            </Button>
+                                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
+                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
+                                    <span>28-29 Aralık</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
+                                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
+                                    <span>Süleymanpaşa, Tekirdağ</span>
+                                </div>
+                            </motion.div>
                         </motion.div>
 
-                        {/* Quick Info Pills */}
+                        {/* Hero Video - 9:16 aspect ratio */}
                         <motion.div
-                            className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 sm:gap-4 mt-8 sm:mt-12"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1 }}
+                            className="flex-shrink-0 mt-8 lg:mt-0"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 1, delay: 0.3 }}
                         >
-                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
-                                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
-                                <span>28-29 Aralık</span>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm">
-                                <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
-                                <span>Süleymanpaşa, Tekirdağ</span>
+                            <div className="relative w-[200px] sm:w-[240px] lg:w-[280px] xl:w-[320px] aspect-[9/16] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border-4 border-white/20">
+                                <video
+                                    className="w-full h-full object-cover"
+                                    muted
+                                    playsInline
+                                    controls
+                                    poster="/christmas/poster.webp"
+                                >
+                                    <source src="/christmas/video.mp4" type="video/mp4" />
+                                </video>
                             </div>
                         </motion.div>
-                    </motion.div>
+                    </div>
                 </div>
 
 
@@ -254,14 +279,14 @@ export default function ChristmasMarketPage() {
                         ].map((card, i) => (
                             <motion.div
                                 key={i}
+                                className="h-full"
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.15 }}
                                 viewport={{ once: true }}
                             >
-                                <Card className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300 group overflow-hidden">
-                                    <CardContent className="p-5 sm:p-6 md:p-8 text-center space-y-3 sm:space-y-4 relative">
-                                        <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+                                <Card className="bg-white/5 backdrop-blur-md border-white/10 transition-all duration-300 group overflow-hidden h-full">
+                                    <CardContent className="!p-5 sm:!p-6 md:!p-8 text-center space-y-3 sm:space-y-4 relative h-full">
                                         <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 ${card.bgColor} rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto text-white group-hover:scale-110 transition-transform`}>
                                             {card.icon}
                                         </div>
@@ -373,7 +398,7 @@ export default function ChristmasMarketPage() {
                                     ))}
                                 </ul>
                             </div>
-                            <div className="relative hidden md:block">
+                            <div className="relative">
                                 <div className="aspect-square rounded-3xl overflow-hidden border-4 border-green-500 shadow-lg shadow-green-500/20">
                                     <Image
                                         src="/christmas/6.webp"
@@ -397,6 +422,71 @@ export default function ChristmasMarketPage() {
                                 >
                                     🎅
                                 </motion.div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* What We Provide Section */}
+                    <motion.div
+                        className="bg-gradient-to-l from-red-900/50 to-green-900/50 backdrop-blur-md rounded-2xl sm:rounded-3xl md:rounded-[2rem] p-5 sm:p-8 md:p-12 mb-12 sm:mb-16 md:mb-24 border border-white/10"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                            <div className="relative order-last md:order-first">
+                                <div className="aspect-square rounded-3xl overflow-hidden border-4 border-red-500 shadow-lg shadow-red-500/20">
+                                    <Image
+                                        src="/christmas/7.webp"
+                                        alt="Size Sunduklarımız"
+                                        fill
+                                        className="object-cover rounded-2xl"
+                                    />
+                                </div>
+                                {/* Floating ornaments */}
+                                <motion.div
+                                    className="absolute -top-4 -left-4 text-3xl lg:text-5xl"
+                                    animate={{ rotate: [0, 10, 0] }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                >
+                                    🎁
+                                </motion.div>
+                            </div>
+
+                            <div>
+                                <span className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:mb-6 block">🤝</span>
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">Size Neler Sunuyoruz?</h2>
+                                <p className="text-white/70 text-sm sm:text-base mb-4 sm:mb-6">
+                                    Siz sadece ürünlerinize odaklanın, gerisini biz düşündük. Katılım ücretine dahil olan hizmetlerimiz:
+                                </p>
+                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    {[
+                                        "Özel standınız (70x100 cm)",
+                                        "2 Sandalye",
+                                        "Elektrik",
+                                        "Masa örtüsü (yılbaşı uyumlu)",
+                                        "Kapalı alan",
+                                        "Isıtıcı",
+                                        "Çay & Kahve & Yemek ikramları",
+                                        "Özel personel",
+                                        "İsimlikler (PVC)",
+                                        "Ürün kârı tamamen sizin",
+                                        "0% komisyon",
+                                        "Çekiliş ile ürün satışı",
+                                    ].map((item, i) => (
+                                        <motion.li
+                                            key={i}
+                                            className="flex items-center gap-2 text-white/80 text-sm"
+                                            initial={{ opacity: 0, x: 20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            viewport={{ once: true }}
+                                        >
+                                            <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                                            <span>{item}</span>
+                                        </motion.li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
                     </motion.div>
