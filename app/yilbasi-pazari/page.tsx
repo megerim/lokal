@@ -255,7 +255,7 @@ export default function ChristmasMarketPage() {
                             {
                                 icon: <Calendar className="w-6 h-6 sm:w-8 sm:h-8" />,
                                 title: "Tarih",
-                                desc: "28-29 Aralık 2024",
+                                desc: "28-29 Aralık 2025",
                                 subdesc: "Cumartesi - Pazar",
                                 color: "from-red-500 to-red-600",
                                 bgColor: "bg-red-500/10",
