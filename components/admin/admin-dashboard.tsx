@@ -36,7 +36,7 @@ interface Announcement {
 }
 
 export function AdminDashboard() {
-  const { user } = useAuth()
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
@@ -101,11 +101,30 @@ export function AdminDashboard() {
     fetchAnnouncements()
   }, [])
 
+  if (authLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Yükleniyor...</p>
+      </div>
+    )
+  }
+
   if (!user) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Giriş Gerekli</h2>
         <p className="text-gray-600">Admin paneline erişmek için giriş yapmanız gerekiyor.</p>
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-4">Yetkisiz Erişim</h2>
+        <p className="text-gray-600">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
+        <p className="text-gray-500 mt-2 text-sm">Sadece admin kullanıcılar bu panele erişebilir.</p>
       </div>
     )
   }

@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
+import { useAuth } from "@/components/auth/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { QrCode, CheckCircle, XCircle } from "lucide-react"
 
 const RedeemVoucherPage = () => {
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const scannerRef = useRef<HTMLDivElement>(null)
   const [scanResult, setScanResult] = useState<string | null>(null)
   const [isRedeeming, setIsRedeeming] = useState(false)
@@ -16,7 +18,7 @@ const RedeemVoucherPage = () => {
   const { toast } = useToast()
 
   useEffect(() => {
-    if (!scannerRef.current) return
+    if (!isAdmin || !scannerRef.current) return
 
     const scanner = new Html5QrcodeScanner(
       scannerRef.current.id,
@@ -40,7 +42,7 @@ const RedeemVoucherPage = () => {
         console.error("Failed to clear html5QrcodeScanner.", error)
       })
     }
-  }, [])
+  }, [isAdmin])
 
   const handleRedeem = async () => {
     if (!scanResult) return
@@ -87,6 +89,40 @@ const RedeemVoucherPage = () => {
     setRedemptionMessage("")
     // This is a trick to force re-render and re-initialize the scanner
     window.location.reload();
+  }
+
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Yükleniyor...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">Giriş Gerekli</h2>
+          <p className="text-gray-600">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">Yetkisiz Erişim</h2>
+          <p className="text-gray-600">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
+          <p className="text-gray-500 mt-2 text-sm">Sadece admin kullanıcılar bu sayfaya erişebilir.</p>
+        </div>
+      </div>
+    )
   }
 
   return (

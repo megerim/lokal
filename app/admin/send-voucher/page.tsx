@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useAuth } from "@/components/auth/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,6 +33,7 @@ interface User {
 }
 
 export default function SendVoucherPage() {
+  const { user, isAdmin, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const supabase = createClient()
   const [users, setUsers] = useState<User[]>([])
@@ -45,6 +47,8 @@ export default function SendVoucherPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
+    if (!isAdmin) return
+    
     const fetchUsers = async () => {
       const { data, error } = await supabase
         .from("users_view")
@@ -62,7 +66,7 @@ export default function SendVoucherPage() {
       }
     }
     fetchUsers()
-  }, [supabase, toast])
+  }, [supabase, toast, isAdmin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -138,6 +142,40 @@ export default function SendVoucherPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Yükleniyor...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">Giriş Gerekli</h2>
+          <p className="text-gray-600">Bu sayfaya erişmek için giriş yapmanız gerekiyor.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">Yetkisiz Erişim</h2>
+          <p className="text-gray-600">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
+          <p className="text-gray-500 mt-2 text-sm">Sadece admin kullanıcılar bu sayfaya erişebilir.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
