@@ -40,7 +40,7 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -126,8 +126,23 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
+    // Only fetch data when auth loading is complete and user exists
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
     fetchDashboardData()
-  }, [user])
+  }, [user, authLoading])
+
+  // Show loading while auth is still loading
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <LoadingSpinner />
+      </div>
+    )
+  }
 
   if (!user) {
     return (

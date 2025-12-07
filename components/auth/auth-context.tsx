@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react"
+import { createContext, useContext, useEffect, useState, useMemo, useCallback, useRef } from "react"
 import type { User } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 
@@ -25,10 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const initialLoadDone = useRef(false)
   
   const supabase = useMemo(() => createClient(), [])
 
-  const fetchUserRole = useCallback(async (userId: string) => {
+  const fetchUserRole = useCallback(async (userId: string): Promise<boolean> => {
     try {
       const { data: profile, error } = await supabase
         .from("user_profiles")
@@ -37,13 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error || !profile) {
-        setIsAdmin(false)
-        return
+        return false
       }
 
-      setIsAdmin(profile.role === 'admin')
+      return profile.role === 'admin'
     } catch (error) {
-      setIsAdmin(false)
+      return false
     }
   }, [supabase])
 
@@ -60,7 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setUser(user)
         if (user) {
-          await fetchUserRole(user.id)
+          const adminStatus = await fetchUserRole(user.id)
+          setIsAdmin(adminStatus)
         }
       }
     } catch (error) {
@@ -70,12 +71,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase, fetchUserRole])
 
   useEffect(() => {
-    const getUser = async () => {
+    let isMounted = true
+
+    const initializeAuth = async () => {
       try {
         const {
           data: { user },
           error,
         } = await supabase.auth.getUser()
+
+        if (!isMounted) return
 
         if (error) {
           setUser(null)
@@ -83,31 +88,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setUser(user)
           if (user) {
-            await fetchUserRole(user.id)
+            const adminStatus = await fetchUserRole(user.id)
+            if (isMounted) {
+              setIsAdmin(adminStatus)
+            }
           }
         }
       } catch (error) {
-        setUser(null)
-        setIsAdmin(false)
+        if (isMounted) {
+          setUser(null)
+          setIsAdmin(false)
+        }
+      } finally {
+        if (isMounted) {
+          initialLoadDone.current = true
+          setLoading(false)
+        }
       }
-      setLoading(false)
     }
 
-    getUser()
+    initializeAuth()
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return
+      
+      // Update user state immediately
       setUser(session?.user ?? null)
+      
       if (session?.user) {
-        await fetchUserRole(session.user.id)
+        const adminStatus = await fetchUserRole(session.user.id)
+        if (isMounted) {
+          setIsAdmin(adminStatus)
+        }
       } else {
         setIsAdmin(false)
       }
-      setLoading(false)
+      
+      // Only set loading false if initial load is done (to avoid race condition)
+      if (initialLoadDone.current) {
+        setLoading(false)
+      }
     })
 
     return () => {
+      isMounted = false
       subscription.unsubscribe()
     }
   }, [supabase, fetchUserRole])

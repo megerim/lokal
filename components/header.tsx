@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { useRef, useState } from "react"
 
 export function Header() {
-  const { user, signOut, loading } = useAuth()
+  const { user, signOut, loading, isAdmin } = useAuth()
   const pathname = usePathname()
   const [activeItem, setActiveItem] = useState<string | null>(null)
 
@@ -105,12 +105,14 @@ export function Header() {
                       Panel
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/admin">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Yönetim
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Yönetim
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     Çıkış Yap
@@ -174,12 +176,14 @@ export function Header() {
                       Panel
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/admin">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Yönetim
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Yönetim
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     Çıkış Yap
