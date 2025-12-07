@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -26,13 +26,15 @@ export function LoginForm() {
   const error = searchParams.get("error")
 
   // Show error toast if redirected from callback with error
-  if (error === "auth_callback_error") {
-    toast({
-      title: "Giriş Hatası",
-      description: "Google ile giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.",
-      variant: "destructive",
-    })
-  }
+  useEffect(() => {
+    if (error === "auth_callback_error") {
+      toast({
+        title: "Giriş Hatası",
+        description: "Google ile giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      })
+    }
+  }, [error, toast])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()

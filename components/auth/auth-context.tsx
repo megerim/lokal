@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let isMounted = true
+    let subscription: { unsubscribe: () => void } | null = null
 
     const initializeAuth = async () => {
       try {
@@ -103,38 +104,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (isMounted) {
           initialLoadDone.current = true
           setLoading(false)
+          
+          // Set up auth state listener AFTER initial load is complete
+          const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (!isMounted) return
+            
+            // Skip INITIAL_SESSION since we already handled it
+            if (event === 'INITIAL_SESSION') return
+            
+            setUser(session?.user ?? null)
+            
+            if (session?.user) {
+              const adminStatus = await fetchUserRole(session.user.id)
+              if (isMounted) {
+                setIsAdmin(adminStatus)
+              }
+            } else {
+              setIsAdmin(false)
+            }
+          })
+          subscription = data.subscription
         }
       }
     }
 
     initializeAuth()
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return
-      
-      // Update user state immediately
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        const adminStatus = await fetchUserRole(session.user.id)
-        if (isMounted) {
-          setIsAdmin(adminStatus)
-        }
-      } else {
-        setIsAdmin(false)
-      }
-      
-      // Only set loading false if initial load is done (to avoid race condition)
-      if (initialLoadDone.current) {
-        setLoading(false)
-      }
-    })
-
     return () => {
       isMounted = false
-      subscription.unsubscribe()
+      subscription?.unsubscribe()
     }
   }, [supabase, fetchUserRole])
 

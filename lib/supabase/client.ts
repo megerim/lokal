@@ -1,4 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr"
+import type { SupabaseClient } from "@supabase/supabase-js"
+
+let supabaseInstance: SupabaseClient | null = null
 
 function validateEnvVars() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -16,6 +19,11 @@ function validateEnvVars() {
 }
 
 export function createClient() {
+  if (supabaseInstance) {
+    return supabaseInstance
+  }
+  
   const { url, anonKey } = validateEnvVars()
-  return createBrowserClient(url, anonKey)
+  supabaseInstance = createBrowserClient(url, anonKey)
+  return supabaseInstance
 }
