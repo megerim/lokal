@@ -124,7 +124,7 @@ export function PaymentModal({ activity, isOpen, onClose, onConfirm }: PaymentMo
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-2 text-sm text-muted-foreground bg-blue-50 dark:bg-blue-900/20 p-3 rounded text-blue-800 dark:text-blue-200">
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground bg-blue-50 p-3 rounded text-blue-800">
                         <CreditCard className="w-4 h-4 mt-0.5 shrink-0" />
                         <p>
                             Ödemenizi yaptıktan sonra "Ödeme Yaptım" butonuna tıklayarak kaydınızı tamamlayabilirsiniz.

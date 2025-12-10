@@ -230,18 +230,18 @@ export function DashboardWidgets() {
       {/* Birthday Reminder */}
       {data.birthdayReminder && (
         <motion.div variants={item}>
-          <Card className="border-none bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 shadow-sm rounded-2xl overflow-hidden relative">
+          <Card className="border-none bg-gradient-to-r from-yellow-50 to-orange-50 shadow-sm rounded-2xl overflow-hidden relative">
             <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-400/10 rounded-full blur-2xl -mr-10 -mt-10" />
             <CardContent className="pt-6 relative z-10">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-xl">
-                  <Gift className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
+                <div className="p-3 bg-yellow-100 rounded-xl">
+                  <Gift className="w-8 h-8 text-yellow-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-yellow-800 dark:text-yellow-200">
+                  <h3 className="text-lg font-bold text-yellow-800">
                     Doğum gününüz yaklaşıyor! 🎉
                   </h3>
-                  <p className="text-yellow-700 dark:text-yellow-300">
+                  <p className="text-yellow-700">
                     Özel doğum günü kuponunuzu almayı unutmayın
                   </p>
                 </div>
@@ -254,10 +254,10 @@ export function DashboardWidgets() {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Upcoming Activities */}
         <motion.div variants={item}>
-          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 group">
+          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white group">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="p-2 bg-blue-100 rounded-xl text-blue-600 group-hover:scale-110 transition-transform duration-300">
                   <Calendar className="w-6 h-6" />
                 </div>
                 Yaklaşan Aktiviteler
@@ -270,17 +270,17 @@ export function DashboardWidgets() {
               {data.upcomingActivities.length > 0 ? (
                 <div className="space-y-4">
                   {data.upcomingActivities.map(activity => (
-                    <div key={activity.id} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-transparent hover:border-blue-100 dark:hover:border-blue-800">
-                      <div className="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-white dark:bg-gray-800 shadow-sm text-center overflow-hidden">
+                    <div key={activity.id} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
+                      <div className="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-white shadow-sm text-center overflow-hidden">
                         <span className="text-xs font-bold text-red-500 uppercase">
                           {format(new Date(activity.date_time), 'MMM', { locale: tr })}
                         </span>
-                        <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                        <span className="text-lg font-bold text-gray-900">
                           {format(new Date(activity.date_time), 'd')}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{activity.title}</h4>
+                        <h4 className="font-semibold text-gray-900 line-clamp-1">{activity.title}</h4>
                         <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
@@ -296,7 +296,7 @@ export function DashboardWidgets() {
                       </div>
                     </div>
                   ))}
-                  <Button variant="ghost" className="w-full justify-between hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 group/btn" asChild>
+                  <Button variant="ghost" className="w-full justify-between hover:bg-blue-50 text-blue-600 group/btn" asChild>
                     <Link href="/dashboard?tab=activities">
                       Tüm Aktiviteler
                       <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -304,11 +304,11 @@ export function DashboardWidgets() {
                   </Button>
                 </div>
               ) : (
-                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 dark:bg-gray-800/30 border border-dashed border-gray-200 dark:border-gray-700">
-                  <div className="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+                  <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <Calendar className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">Yaklaşan aktivite yok</p>
+                  <p className="text-gray-600 font-medium mb-1">Yaklaşan aktivite yok</p>
                   <p className="text-sm text-muted-foreground mb-4">Yeni deneyimler keşfetmeye ne dersin?</p>
                   <Button className="rounded-full" asChild>
                     <Link href="/duyurular">Aktiviteleri Keşfet</Link>
@@ -321,10 +321,10 @@ export function DashboardWidgets() {
 
         {/* Recent Group Activity */}
         <motion.div variants={item}>
-          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 group">
+          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white group">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="p-2 bg-green-100 rounded-xl text-green-600 group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-6 h-6" />
                 </div>
                 Grup Aktiviteleri
@@ -337,27 +337,27 @@ export function DashboardWidgets() {
               {data.recentGroupActivity.length > 0 ? (
                 <div className="space-y-4">
                   {data.recentGroupActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors border border-transparent hover:border-green-100 dark:hover:border-green-800">
-                      <div className="p-2.5 rounded-full bg-white dark:bg-gray-800 shadow-sm shrink-0">
-                        <MessageCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 hover:bg-green-50 transition-colors border border-transparent hover:border-green-100">
+                      <div className="p-2.5 rounded-full bg-white shadow-sm shrink-0">
+                        <MessageCircle className="w-5 h-5 text-green-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1 text-sm">{activity.group_name}</h4>
-                          <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full shadow-sm">
+                          <h4 className="font-semibold text-gray-900 line-clamp-1 text-sm">{activity.group_name}</h4>
+                          <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2 bg-white px-2 py-0.5 rounded-full shadow-sm">
                             {formatDistanceToNow(new Date(activity.comment_time), {
                               addSuffix: true,
                               locale: tr
                             })}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">
-                          <span className="font-medium text-gray-900 dark:text-gray-100">{activity.comment_user}:</span> {activity.last_comment}
+                        <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                          <span className="font-medium text-gray-900">{activity.comment_user}:</span> {activity.last_comment}
                         </p>
                       </div>
                     </div>
                   ))}
-                  <Button variant="ghost" className="w-full justify-between hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 group/btn" asChild>
+                  <Button variant="ghost" className="w-full justify-between hover:bg-green-50 text-green-600 group/btn" asChild>
                     <Link href="/dashboard?tab=social-groups">
                       Tüm Gruplar
                       <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -365,11 +365,11 @@ export function DashboardWidgets() {
                   </Button>
                 </div>
               ) : (
-                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 dark:bg-gray-800/30 border border-dashed border-gray-200 dark:border-gray-700">
-                  <div className="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+                  <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <Users className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">Grup aktivitesi yok</p>
+                  <p className="text-gray-600 font-medium mb-1">Grup aktivitesi yok</p>
                   <p className="text-sm text-muted-foreground mb-4">İlgi alanlarına uygun gruplara katıl</p>
                   <Button className="rounded-full" variant="outline" asChild>
                     <Link href="/sosyal-gruplar">Gruplara Katıl</Link>
@@ -382,10 +382,10 @@ export function DashboardWidgets() {
 
         {/* Recent Personal Letters */}
         <motion.div variants={item}>
-          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 group">
+          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white group">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="p-2 bg-purple-100 rounded-xl text-purple-600 group-hover:scale-110 transition-transform duration-300">
                   <FileText className="w-6 h-6" />
                 </div>
                 Son Mektuplarım
@@ -398,13 +398,13 @@ export function DashboardWidgets() {
               {data.recentLetters.length > 0 ? (
                 <div className="space-y-4">
                   {data.recentLetters.map(letter => (
-                    <div key={letter.id} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors border border-transparent hover:border-purple-100 dark:hover:border-purple-800">
-                      <div className="p-2.5 rounded-full bg-white dark:bg-gray-800 shadow-sm shrink-0">
-                        <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <div key={letter.id} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 hover:bg-purple-50 transition-colors border border-transparent hover:border-purple-100">
+                      <div className="p-2.5 rounded-full bg-white shadow-sm shrink-0">
+                        <Sparkles className="w-5 h-5 text-purple-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{letter.title}</h4>
+                          <h4 className="font-semibold text-gray-900 line-clamp-1">{letter.title}</h4>
                           <Badge variant={letter.status === 'published' ? 'default' : 'secondary'} className="text-[10px] px-2 py-0 h-5">
                             {letter.status === 'published' ? 'Yayınlandı' : 'Taslak'}
                           </Badge>
@@ -422,7 +422,7 @@ export function DashboardWidgets() {
                       </div>
                     </div>
                   ))}
-                  <Button variant="ghost" className="w-full justify-between hover:bg-purple-50 dark:hover:bg-purple-900/20 text-purple-600 dark:text-purple-400 group/btn" asChild>
+                  <Button variant="ghost" className="w-full justify-between hover:bg-purple-50 text-purple-600 group/btn" asChild>
                     <Link href="/dashboard?tab=letters">
                       Tüm Mektuplar
                       <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -430,11 +430,11 @@ export function DashboardWidgets() {
                   </Button>
                 </div>
               ) : (
-                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 dark:bg-gray-800/30 border border-dashed border-gray-200 dark:border-gray-700">
-                  <div className="bg-white dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <div className="text-center py-10 px-4 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+                  <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <FileText className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">Henüz mektup yazmadınız</p>
+                  <p className="text-gray-600 font-medium mb-1">Henüz mektup yazmadınız</p>
                   <p className="text-sm text-muted-foreground mb-4">Düşüncelerinizi kaydetmeye başlayın</p>
                   <Button className="rounded-full" variant="outline" asChild>
                     <Link href="/dashboard?tab=letters">İlk Mektubunuzu Yazın</Link>
@@ -447,10 +447,10 @@ export function DashboardWidgets() {
 
         {/* Kahve Kuponlarım + Sadakat Programı (Merged) */}
         <motion.div variants={item}>
-          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 group overflow-hidden">
+          <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white group overflow-hidden">
             <CardHeader className="pb-4 relative z-10">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="p-2 bg-orange-100 rounded-xl text-orange-600 group-hover:scale-110 transition-transform duration-300">
                   <Coffee className="w-6 h-6" />
                 </div>
                 Kahve & Sadakat
@@ -464,7 +464,7 @@ export function DashboardWidgets() {
               <CoffeeVoucherDisplay variant="compact" />
             </CardContent>
             {/* Decorative background element */}
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-50 dark:bg-orange-900/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-50 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
           </Card>
         </motion.div>
 

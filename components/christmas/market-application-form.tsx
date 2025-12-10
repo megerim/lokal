@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -82,7 +82,7 @@ export function MarketApplicationForm({
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,6 +108,19 @@ export function MarketApplicationForm({
 
     setLoading(true);
     try {
+      // First verify the session is still valid
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        toast({
+          title: "Oturum Hatası",
+          description: "Oturumunuz sona ermiş olabilir. Lütfen sayfayı yenileyip tekrar giriş yapın.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       const participationDays = [];
       if (values.day27) participationDays.push("27 Aralık");
       if (values.day28) participationDays.push("28 Aralık");
@@ -122,7 +135,10 @@ export function MarketApplicationForm({
         status: "pending",
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase insert error:", error);
+        throw error;
+      }
 
       toast({
         title: "Başvuru Alındı! 🎉",
@@ -133,11 +149,23 @@ export function MarketApplicationForm({
       onClose();
       form.reset();
       setLogoUrl("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Application error:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Başvuru gönderilirken bir hata oluştu.";
+      
+      if (error?.code === '42501' || error?.message?.includes('policy')) {
+        errorMessage = "Yetkilendirme hatası. Lütfen sayfayı yenileyip tekrar giriş yapın.";
+      } else if (error?.code === '23505') {
+        errorMessage = "Bu hesap ile zaten bir başvuru yapılmış.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Hata",
-        description: "Başvuru gönderilirken bir hata oluştu.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -157,7 +185,7 @@ export function MarketApplicationForm({
         </DialogHeader>
 
         {/* Benefits Section */}
-        <div className="bg-gradient-to-r from-red-50 to-green-50 dark:from-red-950/30 dark:to-green-950/30 rounded-xl p-4 mb-4">
+        <div className="bg-gradient-to-r from-red-50 to-green-50 rounded-xl p-4 mb-4">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
             🎁 Size Sunduklarımız
           </h3>
@@ -235,7 +263,7 @@ export function MarketApplicationForm({
                       <FormControl>
                         <label
                           className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${field.value
-                            ? "border-green-500 bg-green-50 dark:bg-green-950/30"
+                            ? "border-green-500 bg-green-50"
                             : "border-border hover:border-green-300"
                             }`}
                         >
@@ -267,7 +295,7 @@ export function MarketApplicationForm({
                       <FormControl>
                         <label
                           className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${field.value
-                            ? "border-red-500 bg-red-50 dark:bg-red-950/30"
+                            ? "border-red-500 bg-red-50"
                             : "border-border hover:border-red-300"
                             }`}
                         >

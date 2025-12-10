@@ -197,16 +197,16 @@ export function SocialGroupsNav() {
   }
 
   const CATEGORY_COLORS: Record<string, string> = {
-    movie: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-    yoga: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    book_club: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-    art: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
-    music: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    sports: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-    cooking: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-    technology: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300",
-    language: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300",
-    other: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+    movie: "bg-purple-100 text-purple-800",
+    yoga: "bg-green-100 text-green-800",
+    book_club: "bg-yellow-100 text-yellow-800",
+    art: "bg-pink-100 text-pink-800",
+    music: "bg-blue-100 text-blue-800",
+    sports: "bg-red-100 text-red-800",
+    cooking: "bg-orange-100 text-orange-800",
+    technology: "bg-indigo-100 text-indigo-800",
+    language: "bg-teal-100 text-teal-800",
+    other: "bg-gray-100 text-gray-800",
   }
 
   if (loading) {
@@ -232,10 +232,10 @@ export function SocialGroupsNav() {
 
   if (groups.length === 0) {
     return (
-      <Card className="border-none shadow-lg rounded-2xl bg-white dark:bg-gray-900">
+      <Card className="border-none shadow-lg rounded-2xl bg-white">
         <CardContent className="pt-12 pb-12">
           <div className="text-center">
-            <div className="bg-gray-100 dark:bg-gray-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Users className="w-10 h-10 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Henüz grubunuz yok</h3>
@@ -277,8 +277,8 @@ export function SocialGroupsNav() {
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+          <div className="p-2 bg-indigo-100 rounded-xl">
+            <Users className="w-6 h-6 text-indigo-600" />
           </div>
           <div>
             <h2 className="text-xl font-bold">Sosyal Gruplarım</h2>
@@ -298,7 +298,7 @@ export function SocialGroupsNav() {
       <div className="grid gap-6 md:grid-cols-2">
         {groups.map(group => (
           <motion.div key={group.id} variants={item}>
-            <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-gray-900 overflow-hidden group">
+            <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white overflow-hidden group">
               {group.image_url && (
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
@@ -379,12 +379,12 @@ export function SocialGroupsNav() {
                   </div>
                 )}
 
-                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm">
+                <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
                   {group.description}
                 </p>
 
                 {group.recent_comments && group.recent_comments.length > 0 && (
-                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                  <div className="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
                     <h4 className="text-xs font-semibold mb-2 flex items-center gap-1 text-muted-foreground uppercase tracking-wider">
                       <MessageCircle className="w-3 h-3" />
                       Son Aktivite
@@ -392,8 +392,8 @@ export function SocialGroupsNav() {
                     <div className="space-y-2">
                       {group.recent_comments.slice(0, 2).map((comment, index) => (
                         <div key={index} className="text-sm">
-                          <span className="font-medium text-gray-900 dark:text-gray-100">{comment.user_name}</span>:
-                          <span className="ml-1 text-gray-600 dark:text-gray-400">
+                          <span className="font-medium text-gray-900">{comment.user_name}</span>:
+                          <span className="ml-1 text-gray-600">
                             {comment.content.length > 50
                               ? `${comment.content.substring(0, 50)}...`
                               : comment.content
@@ -401,7 +401,7 @@ export function SocialGroupsNav() {
                           </span>
                         </div>
                       ))}
-                      <div className="text-xs text-muted-foreground pt-1 border-t border-gray-100 dark:border-gray-800 mt-2">
+                      <div className="text-xs text-muted-foreground pt-1 border-t border-gray-100 mt-2">
                         <Clock className="w-3 h-3 inline mr-1" />
                         {formatDistanceToNow(new Date(group.last_activity || group.updated_at), {
                           addSuffix: true,
@@ -424,7 +424,7 @@ export function SocialGroupsNav() {
                     variant="outline"
                     size="icon"
                     onClick={() => handleLeaveGroup(group)}
-                    className="rounded-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-900/30"
+                    className="rounded-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                     title="Gruptan Ayrıl"
                   >
                     <UserMinus className="w-4 h-4" />

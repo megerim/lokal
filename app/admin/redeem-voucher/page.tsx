@@ -140,14 +140,14 @@ const RedeemVoucherPage = () => {
           ) : (
             <div className="text-center">
               {redemptionStatus === "success" && (
-                <div className="flex flex-col items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="flex flex-col items-center gap-4 p-4 bg-green-50 rounded-lg">
                   <CheckCircle className="w-16 h-16 text-green-600" />
                   <p className="font-semibold">Kupon Başarıyla Kullanıldı!</p>
                   <p className="text-sm text-muted-foreground">{redemptionMessage}</p>
                 </div>
               )}
               {redemptionStatus === "error" && (
-                <div className="flex flex-col items-center gap-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <div className="flex flex-col items-center gap-4 p-4 bg-red-50 rounded-lg">
                   <XCircle className="w-16 h-16 text-red-600" />
                   <p className="font-semibold">Hata Oluştu</p>
                   <p className="text-sm text-muted-foreground">{redemptionMessage}</p>

@@ -52,8 +52,8 @@ const statusConfig = {
     label: 'Değerlendirmede',
     description: 'Başvurunuz inceleniyor. En kısa sürede size dönüş yapacağız.',
     icon: Clock,
-    color: 'text-yellow-600 dark:text-yellow-400',
-    bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-100',
     badgeVariant: 'secondary' as const,
     step: 1
   },
@@ -61,8 +61,8 @@ const statusConfig = {
     label: 'Ödeme Bekleniyor',
     description: 'Başvurunuz onaylandı! Katılım ücretini ödeyerek yerinizi kesinleştirin.',
     icon: CreditCard,
-    color: 'text-blue-600 dark:text-blue-400',
-    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-100',
     badgeVariant: 'outline' as const,
     step: 2
   },
@@ -70,8 +70,8 @@ const statusConfig = {
     label: 'Ödeme Bildirimi Alındı',
     description: 'Ödeme bildiriminiz alındı ve kontrol ediliyor.',
     icon: AlertCircle,
-    color: 'text-orange-600 dark:text-orange-400',
-    bgColor: 'bg-orange-100 dark:bg-orange-900/30',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-100',
     badgeVariant: 'default' as const,
     step: 3
   },
@@ -79,8 +79,8 @@ const statusConfig = {
     label: 'Tamamlandı',
     description: 'Tebrikler! Yeriniz kesinleşti. Yılbaşı Pazarı\'nda görüşmek üzere! 🎄',
     icon: CheckCircle2,
-    color: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-100 dark:bg-green-900/30',
+    color: 'text-green-600',
+    bgColor: 'bg-green-100',
     badgeVariant: 'default' as const,
     step: 4
   },
@@ -88,8 +88,8 @@ const statusConfig = {
     label: 'Reddedildi',
     description: 'Maalesef başvurunuz bu sefer kabul edilemedi. Gelecek etkinliklerde görüşmek dileğiyle.',
     icon: XCircle,
-    color: 'text-red-600 dark:text-red-400',
-    bgColor: 'bg-red-100 dark:bg-red-900/30',
+    color: 'text-red-600',
+    bgColor: 'bg-red-100',
     badgeVariant: 'destructive' as const,
     step: 0
   }
@@ -194,7 +194,7 @@ export function MarketApplicationStatus() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-gradient-to-br from-red-50/50 to-green-50/50 dark:from-red-950/20 dark:to-green-950/20 group overflow-hidden">
+      <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-gradient-to-br from-red-50/50 to-green-50/50 group overflow-hidden">
         <CardHeader className="pb-4 relative z-10">
           <CardTitle className="flex items-center gap-3 text-xl">
             <div className={`p-2 ${status.bgColor} rounded-xl ${status.color} group-hover:scale-110 transition-transform duration-300`}>
@@ -238,7 +238,7 @@ export function MarketApplicationStatus() {
                     className={`h-2 flex-1 rounded-full transition-colors ${
                       step <= status.step 
                         ? 'bg-green-500' 
-                        : 'bg-gray-200 dark:bg-gray-700'
+                        : 'bg-gray-200'
                     }`}
                   />
                 </div>
@@ -282,7 +282,7 @@ export function MarketApplicationStatus() {
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
-                  <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-4 space-y-3">
+                  <div className="bg-blue-50 rounded-xl p-4 space-y-3">
                     <div>
                       <p className="text-xs text-muted-foreground">Banka</p>
                       <p className="font-medium">{bankInfo.bankName}</p>
@@ -311,8 +311,8 @@ export function MarketApplicationStatus() {
                     </div>
                   </div>
 
-                  <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3">
-                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                    <p className="text-sm text-yellow-800">
                       ⚠️ Ödeme açıklamasına marka adınızı yazmayı unutmayın.
                     </p>
                   </div>
@@ -341,16 +341,16 @@ export function MarketApplicationStatus() {
 
           {/* Completed Status - Show confirmation */}
           {application.status === 'completed' && application.payment_confirmed_at && (
-            <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-3 flex items-center gap-2">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-              <p className="text-sm text-green-800 dark:text-green-200">
+              <p className="text-sm text-green-800">
                 Ödemeniz {format(new Date(application.payment_confirmed_at), "d MMMM yyyy", { locale: tr })} tarihinde onaylandı.
               </p>
             </div>
           )}
 
           {/* Link to Market Page */}
-          <Button variant="ghost" className="w-full justify-between hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 group/btn" asChild>
+          <Button variant="ghost" className="w-full justify-between hover:bg-red-50 text-red-600 group/btn" asChild>
             <Link href="/yilbasi-pazari">
               Yılbaşı Pazarı Sayfası
               <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -359,8 +359,8 @@ export function MarketApplicationStatus() {
         </CardContent>
 
         {/* Decorative elements */}
-        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-red-100 dark:bg-red-900/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
-        <div className="absolute -top-10 -left-10 w-32 h-32 bg-green-100 dark:bg-green-900/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-red-100 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
+        <div className="absolute -top-10 -left-10 w-32 h-32 bg-green-100 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
       </Card>
     </motion.div>
   )

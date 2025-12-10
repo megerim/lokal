@@ -191,7 +191,7 @@ export function CoffeeVoucherDisplay({ variant = 'default' }: CoffeeVoucherDispl
             </div>
 
             {activitiesToNextVoucher < 6 && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-center">
                   <span className="font-medium">{activitiesToNextVoucher}</span> aktiviteye daha katıldığınızda yeni bir kahve kuponu kazanacaksınız!
                 </p>
@@ -292,7 +292,7 @@ export function CoffeeVoucherDisplay({ variant = 'default' }: CoffeeVoucherDispl
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg text-center">
+              <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg text-center">
                 <div style={{ background: 'white', padding: '16px', display: 'inline-block' }}>
                   <QRCode value={selectedVoucher.voucher_code} />
                 </div>
