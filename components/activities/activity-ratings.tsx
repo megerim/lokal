@@ -495,7 +495,7 @@ export function ActivityRatings({
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
                     if (res?.[0]) {
-                      setUploadedPhotos(prev => [...prev, res[0].url])
+                      setUploadedPhotos(prev => [...prev, res[0].ufsUrl])
                     }
                   }}
                   onUploadError={(error: Error) => {

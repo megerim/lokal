@@ -363,8 +363,8 @@ export function MarketApplicationForm({
                           endpoint="imageUploader"
                           onClientUploadComplete={(res) => {
                             if (res?.[0]) {
-                              setLogoUrl(res[0].url);
-                              field.onChange(res[0].url);
+                              setLogoUrl(res[0].ufsUrl);
+                              field.onChange(res[0].ufsUrl);
                             }
                           }}
                           onUploadError={(error: Error) => {

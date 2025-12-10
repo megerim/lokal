@@ -308,7 +308,7 @@ export function UserProfileSettings() {
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {
                       if (res?.[0]) {
-                        setAvatarUrl(res[0].url)
+                        setAvatarUrl(res[0].ufsUrl)
                         toast({
                           title: "Başarılı",
                           description: "Profil fotoğrafı yüklendi",

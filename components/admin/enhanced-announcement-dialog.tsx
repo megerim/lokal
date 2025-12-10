@@ -309,7 +309,7 @@ export function EnhancedAnnouncementDialog({
               endpoint="imageUploader"
               onClientUploadComplete={(res) => {
                 if (res?.[0]) {
-                  setFormData({ ...formData, image_url: res[0].url })
+                  setFormData({ ...formData, image_url: res[0].ufsUrl })
                   toast({
                     title: "Başarılı!",
                     description: "Görsel yüklendi.",

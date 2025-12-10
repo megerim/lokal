@@ -4,8 +4,16 @@ import Link from "next/link"
 import { LayoutGroup, motion } from "motion/react"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
-import { useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Snowflake, TreePine, CandyCane } from "lucide-react"
+
+interface SnowflakeData {
+  id: number
+  left: string
+  delay: number
+  duration: number
+  size: number
+}
 
 const exampleImages = [
   {
@@ -41,15 +49,19 @@ const exampleImages = [
 ]
 
 function LandingHero() {
-  const snowflakes = useMemo(() =>
-    Array.from({ length: 50 }, (_, i) => ({
+  const [snowflakes, setSnowflakes] = useState<SnowflakeData[]>([])
+
+  // Generate snowflakes only on the client side to avoid hydration mismatch
+  useEffect(() => {
+    const flakes = Array.from({ length: 50 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       delay: Math.random() * 5,
       duration: 10 + Math.random() * 10,
       size: 12 + Math.random() * 12,
-    })), []
-  )
+    }))
+    setSnowflakes(flakes)
+  }, [])
 
   return (
     <section className="w-full h-screen overflow-hidden flex flex-col items-center justify-center relative">

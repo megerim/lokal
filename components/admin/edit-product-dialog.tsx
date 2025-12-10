@@ -216,8 +216,8 @@ export function EditProductDialog({ product, onSuccess, trigger }: EditProductDi
                 <UploadButton<OurFileRouter, "imageUploader">
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
-                    if (res?.[0]?.url) {
-                      setImageUrl(res[0].url)
+                    if (res?.[0]?.ufsUrl) {
+                      setImageUrl(res[0].ufsUrl)
                       toast({
                         title: "Başarılı",
                         description: "Görsel yüklendi.",
