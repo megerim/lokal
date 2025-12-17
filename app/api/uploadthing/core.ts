@@ -45,7 +45,7 @@ export const ourFileRouter = {
       return { uploadedBy: metadata.userId, fileUrl: file.url };
     }),
 
-  // Guest image uploader for Kolay Başvuru (no auth required)
+  // Guest image uploader for Üye Olmadan Başvuru (no auth required)
   guestImageUploader: f({
     image: {
       maxFileSize: "4MB",

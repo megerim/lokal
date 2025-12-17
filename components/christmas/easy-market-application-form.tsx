@@ -125,7 +125,7 @@ export function EasyMarketApplicationForm({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl">🎄 Kolay Başvuru Formu</DialogTitle>
+                    <DialogTitle className="text-2xl">🎄 Üye Olmadan Başvuru Formu</DialogTitle>
                     <DialogDescription>
                         Yılbaşı pazarımızda yer almak için formu doldurun. Giriş yapmadan hızlıca başvurabilirsiniz.
                     </DialogDescription>

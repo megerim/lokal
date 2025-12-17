@@ -181,7 +181,7 @@ export default function ChristmasMarketPage() {
                                     onClick={() => setIsEasyFormOpen(true)}
                                 >
                                     <Zap className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                    Kolay Başvuru
+                                    Üye Olmadan Başvuru
                                 </Button>
                                 <Button
                                     size="lg"
@@ -558,13 +558,13 @@ export default function ChristmasMarketPage() {
                                 onClick={() => setIsEasyFormOpen(true)}
                             >
                                 <Zap className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                                Kolay Başvuru
+                                Üye Olmadan Başvuru
                             </Button>
 
                             <p className="text-white/60 mt-4 sm:mt-6 text-xs sm:text-sm">
                                 {user
                                     ? "Başvurular değerlendirildikten sonra sizinle iletişime geçeceğiz."
-                                    : "Kolay Başvuru ile giriş yapmadan da başvurabilirsiniz."
+                                    : "Üye Olmadan Başvuru ile giriş yapmadan da başvurabilirsiniz."
                                 }
                             </p>
                         </div>

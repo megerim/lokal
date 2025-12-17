@@ -334,7 +334,7 @@ export function MarketApplications() {
                                                                     <>
                                                                         <p className="text-sm">
                                                                             <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 mr-2">
-                                                                                Kolay Başvuru
+                                                                                Üye Olmadan Başvuru
                                                                             </Badge>
                                                                         </p>
                                                                         <p className="text-sm mt-1">{app.guest_email}</p>
