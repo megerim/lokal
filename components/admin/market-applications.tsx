@@ -29,7 +29,7 @@ import Image from "next/image"
 
 interface MarketApplication {
     id: string
-    user_id: string
+    user_id: string | null
     brand_name: string
     product_description: string
     instagram_handle?: string
@@ -39,6 +39,11 @@ interface MarketApplication {
     payment_confirmed_at?: string
     admin_notes?: string
     created_at: string
+    // Guest application fields
+    guest_email?: string
+    guest_phone?: string
+    is_guest?: boolean
+    // User profile for logged-in users
     user_profiles?: {
         full_name: string
         phone_number?: string
@@ -84,13 +89,15 @@ export function MarketApplications() {
 
             if (appsError) throw appsError
 
-            // Then fetch user profiles for all user_ids
+            // Then fetch user profiles for all user_ids (only for non-guest apps)
             if (apps && apps.length > 0) {
-                const userIds = [...new Set(apps.map(app => app.user_id))]
-                const { data: profiles, error: profilesError } = await supabase
-                    .from('user_profiles')
-                    .select('user_id, full_name, phone_number')
-                    .in('user_id', userIds)
+                const userIds = [...new Set(apps.filter(app => app.user_id).map(app => app.user_id))]
+                const { data: profiles, error: profilesError } = userIds.length > 0
+                    ? await supabase
+                        .from('user_profiles')
+                        .select('user_id, full_name, phone_number')
+                        .in('user_id', userIds)
+                    : { data: [], error: null }
 
                 if (profilesError) {
                     console.error('Error fetching profiles:', profilesError)
@@ -235,8 +242,26 @@ export function MarketApplications() {
                                                 </div>
                                             )}
                                         </TableCell>
-                                        <TableCell className="font-medium">{app.brand_name}</TableCell>
-                                        <TableCell>{app.user_profiles?.full_name || '-'}</TableCell>
+                                        <TableCell className="font-medium">
+                                            <div className="flex items-center gap-2">
+                                                {app.brand_name}
+                                                {app.is_guest && (
+                                                    <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+                                                        Kolay
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            {app.is_guest ? (
+                                                <div className="text-sm">
+                                                    <div className="text-muted-foreground">{app.guest_email}</div>
+                                                    <div className="text-xs text-muted-foreground">{app.guest_phone}</div>
+                                                </div>
+                                            ) : (
+                                                app.user_profiles?.full_name || '-'
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex gap-1">
                                                 {app.participation_days?.map((day, i) => (
@@ -262,7 +287,7 @@ export function MarketApplications() {
                                         <TableCell>
                                             <Badge variant={statusColors[app.status]} className={
                                                 app.status === 'payment_submitted' ? 'bg-orange-100 text-orange-700 border-orange-200' :
-                                                app.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' : ''
+                                                    app.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' : ''
                                             }>
                                                 {statusLabels[app.status]}
                                             </Badge>
@@ -305,8 +330,22 @@ export function MarketApplications() {
                                                             </div>
                                                             <div>
                                                                 <h4 className="text-sm font-medium text-muted-foreground">İletişim</h4>
-                                                                <p className="text-sm">{app.user_profiles?.full_name}</p>
-                                                                <p className="text-sm text-muted-foreground">{app.user_profiles?.phone_number || '-'}</p>
+                                                                {app.is_guest ? (
+                                                                    <>
+                                                                        <p className="text-sm">
+                                                                            <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 mr-2">
+                                                                                Kolay Başvuru
+                                                                            </Badge>
+                                                                        </p>
+                                                                        <p className="text-sm mt-1">{app.guest_email}</p>
+                                                                        <p className="text-sm text-muted-foreground">{app.guest_phone}</p>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <p className="text-sm">{app.user_profiles?.full_name}</p>
+                                                                        <p className="text-sm text-muted-foreground">{app.user_profiles?.phone_number || '-'}</p>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </div>
 
@@ -360,7 +399,7 @@ export function MarketApplications() {
                                                                     </Button>
                                                                 </>
                                                             )}
-                                                            
+
                                                             {app.status === 'approved_waiting_payment' && (
                                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                                     <Clock className="w-4 h-4" />

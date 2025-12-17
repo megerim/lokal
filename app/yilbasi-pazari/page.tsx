@@ -4,14 +4,16 @@ import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, MapPin, Gift, ShoppingBag, Star, Music, Coffee, Sparkles, TreePine, Heart, Users, ChevronDown, LogIn, Snowflake, Check } from "lucide-react"
+import { Calendar, MapPin, Gift, ShoppingBag, Star, Music, Coffee, Sparkles, TreePine, Heart, Users, ChevronDown, LogIn, Snowflake, Check, Zap } from "lucide-react"
 import { MarketApplicationForm } from "@/components/christmas/market-application-form"
+import { EasyMarketApplicationForm } from "@/components/christmas/easy-market-application-form"
 import { useAuth } from "@/components/auth/auth-context"
 import Link from "next/link"
 import Image from "next/image"
 
 export default function ChristmasMarketPage() {
     const [isApplicationOpen, setIsApplicationOpen] = useState(false)
+    const [isEasyFormOpen, setIsEasyFormOpen] = useState(false)
     const { user } = useAuth()
 
     const snowflakes = useMemo(() =>
@@ -173,6 +175,14 @@ export default function ChristmasMarketPage() {
                                         </Button>
                                     </Link>
                                 )}
+                                <Button
+                                    size="lg"
+                                    className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-6 rounded-full shadow-xl shadow-green-500/30 font-semibold group"
+                                    onClick={() => setIsEasyFormOpen(true)}
+                                >
+                                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                                    Kolay Başvuru
+                                </Button>
                                 <Button
                                     size="lg"
                                     variant="outline"
@@ -542,10 +552,19 @@ export default function ChristmasMarketPage() {
                                 </Link>
                             )}
 
+                            <Button
+                                size="lg"
+                                className="w-full sm:w-auto bg-green-500 text-white hover:bg-green-600 text-base sm:text-lg md:text-xl px-8 sm:px-10 md:px-12 py-5 sm:py-6 md:py-7 rounded-full font-bold shadow-xl shadow-black/20 group mt-4"
+                                onClick={() => setIsEasyFormOpen(true)}
+                            >
+                                <Zap className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
+                                Kolay Başvuru
+                            </Button>
+
                             <p className="text-white/60 mt-4 sm:mt-6 text-xs sm:text-sm">
                                 {user
                                     ? "Başvurular değerlendirildikten sonra sizinle iletişime geçeceğiz."
-                                    : "Başvuru yapabilmek için üye girişi yapmanız gerekmektedir."
+                                    : "Kolay Başvuru ile giriş yapmadan da başvurabilirsiniz."
                                 }
                             </p>
                         </div>
@@ -556,6 +575,10 @@ export default function ChristmasMarketPage() {
             <MarketApplicationForm
                 isOpen={isApplicationOpen}
                 onClose={() => setIsApplicationOpen(false)}
+            />
+            <EasyMarketApplicationForm
+                isOpen={isEasyFormOpen}
+                onClose={() => setIsEasyFormOpen(false)}
             />
         </div>
     )
