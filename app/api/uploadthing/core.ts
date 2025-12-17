@@ -44,22 +44,6 @@ export const ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId, fileUrl: file.url };
     }),
-
-  // Guest image uploader for Üye Olmadan Başvuru (no auth required)
-  guestImageUploader: f({
-    image: {
-      maxFileSize: "4MB",
-      maxFileCount: 1,
-    },
-  })
-    .middleware(async () => {
-      // No auth check for guest uploads
-      // Return a placeholder for guest uploads
-      return { isGuest: true };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      return { isGuest: metadata.isGuest, fileUrl: file.url };
-    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
